@@ -1,23 +1,24 @@
 #include <iostream>
-#include "Supplicant.h"
 #include <pcap.h>
-
+#include "Server.h"
 using namespace std;
+
+
+
+void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
+
 
 int main()
 {
-	cout << "Hello world" << endl;
+	cout << "server hello" << endl;
 	pcap_if_t *d, *alldevs;
-
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
-	Supplicant s;
-	s.init();
-	s.eapolStart();
-	s.eapResponseIdentify();
 
+	Server server;
+	server.init();
 
-	system("Pause");
 	return 0;
+
 }
