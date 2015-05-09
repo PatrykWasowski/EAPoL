@@ -1,5 +1,7 @@
 #include "Supplicant.h"
 
+using namespace std;
+
 void Supplicant::init()
 {
 
@@ -48,7 +50,7 @@ void Supplicant::init()
 	for (d = alldevs, i = 0; i< inum - 1; d = d->next, i++);
 
 
-	if ((fp = pcap_open(d->name,        // name of the device
+	if ((fp = pcap_open(d->name,    // name of the device
 		100,						// portion of the packet to capture (only the first 100 bytes)
 		PCAP_OPENFLAG_PROMISCUOUS,  // promiscuous mode
 		1000,						// read timeout
@@ -57,22 +59,72 @@ void Supplicant::init()
 		)) == NULL)
 			;
 
-
-			
-	u_char packet[50];
-	packet[0] = (u_char)0;
-	packet[1] = (u_char)80;
-	packet[2] = (u_char)86;
-	packet[3] = (u_char)192;
-	packet[4] = (u_char)0;
-	packet[5] = (u_char)1;
-	for (int i = 6; i < 50; ++i)
-		packet[i] = (u_char)1;
-
-	if (pcap_sendpacket(fp, packet, 50) != 0)
+	for (int i = 0; i < 6; ++i)
 	{
-		fprintf(stderr, "\nError sending the packet: \n", pcap_geterr(fp));
-		return;
+		destinationMac[i] = 1;
+		sourceMac[i] = 1;
 	}
 
+	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
+
+	login = "Maciek";
+
+}
+
+int Supplicant::eapolStart()
+{
+	u_char packet_buffer [100];
+	ETHERNET_HEADER* eth;
+
+	eth = (ETHERNET_HEADER*)packet_buffer;
+	memcpy(eth -> destination, destinationMac, 6);
+	memcpy(eth -> source, sourceMac, 6);
+	eth -> type = htons(0x888E);
+	eth->protocol_version = 2;
+	eth->packet_type = 1;
+	eth->packet_body_length = 0;
+
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER)) != 0)
+	{
+		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
+		return 1;
+	}
+
+	return 0;
+}
+
+int Supplicant::eapResponseIdentify()
+{
+	u_char packet_buffer[100];
+	ETHERNET_HEADER* eth;
+	EAP_HEADER* eap;
+
+	eth = (ETHERNET_HEADER*)packet_buffer;
+	memcpy(eth->destination, destinationMac, 6);
+	memcpy(eth->source, sourceMac, 6);
+	eth->type = htons(0x888E);
+	eth->protocol_version = 2;
+	eth->packet_type = 0;
+	eth->packet_body_length = sizeof(EAP_HEADER) + strlen(login);
+
+	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
+	eap->code = 2;
+	eap->identifier = 1;
+	eap->length = htons(0x0006);
+	 
+	cout << strlen(login) << endl;
+	
+	char* data;
+	data = (char*)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
+	strcpy_s(data, strlen(login)+1, login);
+
+	cout << sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+strlen(login) << endl; 
+
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + strlen(login)) != 0)
+	{
+		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
+		return 1;
+	}
+
+	return 0;
 }

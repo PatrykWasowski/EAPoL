@@ -14,6 +14,9 @@ int main()
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
 	Supplicant s;
 	s.init();
+	s.eapolStart();
+	s.eapResponseIdentify();
+
 	
 	system("Pause");
 	return 0;

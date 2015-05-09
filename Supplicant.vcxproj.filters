@@ -26,5 +26,8 @@
     <ClInclude Include="Supplicant.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="headers.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
