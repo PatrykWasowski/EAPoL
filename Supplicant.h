@@ -4,6 +4,7 @@
 #include <string.h>
 #include <string>
 #include "headers.h"
+#include "md5.h"
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -27,6 +28,7 @@ public:
 	
 	void init();
 	int eapolStart();
+	int eapolLogoff();
 	int eapResponseIdentify();
 	int eapResponseChallenge();
 	//void setMac(u_char mac [6]);

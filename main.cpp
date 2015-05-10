@@ -17,8 +17,7 @@ int main()
 	s.eapolStart();
 	s.eapResponseIdentify();
 	s.eapResponseChallenge();
-	cout << sizeof(EAPRR_HEADER) << " rr " << endl;
-
+	s.eapolLogoff();
 
 	system("Pause");
 	return 0;

@@ -75,13 +75,13 @@ void Supplicant::init()
 
 int Supplicant::eapolStart()
 {
-	u_char packet_buffer [100];
+	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
 
 	eth = (ETHERNET_HEADER*)packet_buffer;
-	memcpy(eth -> destination, destinationMac, 6);
-	memcpy(eth -> source, sourceMac, 6);
-	eth -> type = htons(0x888E);
+	memcpy(eth->destination, destinationMac, 6);
+	memcpy(eth->source, sourceMac, 6);
+	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 1;
 	eth->packet_body_length = 0;
@@ -94,6 +94,31 @@ int Supplicant::eapolStart()
 
 	return 0;
 }
+
+
+int Supplicant::eapolLogoff()
+{
+	u_char packet_buffer[100];
+	ETHERNET_HEADER* eth;
+
+	eth = (ETHERNET_HEADER*)packet_buffer;
+	memcpy(eth->destination, destinationMac, 6);
+	memcpy(eth->source, sourceMac, 6);
+	eth->type = htons(0x888E);
+	eth->protocol_version = 2;
+	eth->packet_type = 2;
+	eth->packet_body_length = 0;
+
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER)) != 0)
+	{
+		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
+		return 1;
+	}
+
+	return 0;
+}
+
+
 
 int Supplicant::eapResponseIdentify()
 {
@@ -110,8 +135,8 @@ int Supplicant::eapResponseIdentify()
 	eth->packet_body_length = sizeof(EAP_HEADER) + strlen(login);
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
-	eap->code = 3;
-	eap->identifier = 1;
+	eap->code = 2;
+	eap->identifier = connectionIdentifier;
 	eap->length = htons(0x0006);
 	 
 	cout << strlen(login) << endl;
@@ -134,14 +159,47 @@ int Supplicant::eapResponseIdentify()
 int Supplicant::eapResponseChallenge()
 {
 	string pas(password);
-	string cha(challenge);		// strcat_s za chuja nie chce dzialac
+	string cha(challenge);		
 	string res = pas + cha;
 
-	const char* res2 = res.c_str();
+	const char *res2 = res.c_str();
 
-	cout << res2 << " " << strlen(res2) << endl;
+	MD5 md5;
+	md5.add(res2, res.length());
+	cout << md5.getHash() << " skrot" << endl;
 
+	const char *res3 = (md5.getHash()).c_str();
 
+	ETHERNET_HEADER* eth;
+	EAP_HEADER* eap;
+	u_char packet_buffer[100];
+
+	eth = (ETHERNET_HEADER*)packet_buffer;
+	memcpy(eth->destination, destinationMac, 6);
+	memcpy(eth->source, sourceMac, 6);
+	eth->type = htons(0x888E);
+	eth->protocol_version = 2;
+	eth->packet_type = 0;
+	eth->packet_body_length = sizeof(EAP_HEADER) + 17; // 1 - type , 16 - skrot md5
+
+	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
+	eap->code = 2;
+	eap->identifier = connectionIdentifier;
+	eap->length = htons(0x0011);
+
+	char *data;
+	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
+	*data = 0x4;
+	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+1);
+	for (int i = 0; i < 17; ++i)
+		*(data + i) = md5.getHash()[i];
+	
+	
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+17) != 0)
+	{
+		fprintf(stderr, "\nError sending the EAP-MD5-Challenge Response packet: \n", pcap_geterr(fp));
+		return 1;
+	}
 
 	return 0;
 }
