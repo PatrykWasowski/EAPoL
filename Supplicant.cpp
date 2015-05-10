@@ -108,7 +108,7 @@ int Supplicant::eapResponseIdentify()
 	eth->packet_body_length = sizeof(EAP_HEADER) + strlen(login);
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
-	eap->code = 2;
+	eap->code = 3;
 	eap->identifier = 1;
 	eap->length = htons(0x0006);
 	 
