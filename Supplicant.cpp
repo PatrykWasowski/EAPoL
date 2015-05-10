@@ -68,6 +68,8 @@ void Supplicant::init()
 	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
 
 	login = "Maciek";
+	password = "pass";
+	challenge = "chal";
 
 }
 
@@ -125,6 +127,21 @@ int Supplicant::eapResponseIdentify()
 		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
 		return 1;
 	}
+
+	return 0;
+}
+
+int Supplicant::eapResponseChallenge()
+{
+	string pas(password);
+	string cha(challenge);		// strcat_s za chuja nie chce dzialac
+	string res = pas + cha;
+
+	const char* res2 = res.c_str();
+
+	cout << res2 << " " << strlen(res2) << endl;
+
+
 
 	return 0;
 }

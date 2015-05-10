@@ -2,6 +2,7 @@
 #include <iostream>
 #include <pcap.h>
 #include <string.h>
+#include <string>
 #include "headers.h"
 
 #pragma comment(lib,"ws2_32.lib")
@@ -17,6 +18,8 @@ private:
 	u_char sourceMac[6];
 	char *login;
 	u_char connectionIdentifier;
+	char *challenge;
+	char *password;
 
 public:
 	Supplicant(){}
@@ -25,6 +28,7 @@ public:
 	void init();
 	int eapolStart();
 	int eapResponseIdentify();
+	int eapResponseChallenge();
 	//void setMac(u_char mac [6]);
 	//char* getMac();
 

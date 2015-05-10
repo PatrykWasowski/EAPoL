@@ -15,6 +15,13 @@ typedef struct eap_header{
 	u_short length;
 } EAP_HEADER;
 
+typedef struct eap_header_rr{
+	u_char code;
+	u_char identifier;
+	u_char type;
+	u_short length;
+} EAPRR_HEADER;
+
 typedef struct eapol_header {
 	u_char descriptor;
 	u_char key_length[2];
