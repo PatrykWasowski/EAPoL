@@ -9,7 +9,6 @@ int main()
 	cout << "Hello world" << endl;
 	pcap_if_t *d, *alldevs;
 
-
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
 	Supplicant s;
