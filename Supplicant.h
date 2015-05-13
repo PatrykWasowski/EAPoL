@@ -18,14 +18,15 @@ private:
 	char errbuf[PCAP_ERRBUF_SIZE];
 	u_char destinationMac[6];
 	u_char sourceMac[6];
-	char *login;
+	char login[100];
 	u_char connectionIdentifier;
-	char *challenge;
-	char *password;
-
+	char challenge[100];
+	char password[100];
+	int packet_counter;
+	//bool sessionActive;
 public:
 	pcap_t* fp;
-
+	bool sessionActive;
 	Supplicant(){}
 	~Supplicant(){}
 	
@@ -36,6 +37,9 @@ public:
 	int eapResponseChallenge();
 	int listen();
 	void listenNext();
+	void setChallenge(char* );
+	void setLogin(char*);
+	void setPassword(char* );
 	
 	//void setMac(u_char mac [6]);
 	//char* getMac();

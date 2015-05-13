@@ -15,11 +15,16 @@ int main()
 	
 	s.init();
 	s.eapolStart();
-	s.eapResponseIdentify();
-	s.eapResponseChallenge();
-	s.eapolLogoff();
+	//s.eapResponseIdentify();
+	//s.eapResponseChallenge();
+	//s.eapolLogoff();
+	while (s.sessionActive)
 	s.listenNext();
 
+
+	cout << "closing connection" ;
+	s.eapolLogoff();
+	cout << "done!"<<endl;
 	system("Pause");
 	return 0;
 }

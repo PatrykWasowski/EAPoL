@@ -67,10 +67,31 @@ void Supplicant::init()
 
 	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
 
-	login = "Maciek";
-	password = "pass";
-	challenge = "chal";
+	//login = "Maciek";
+	//password = "pass";
+	//challenge = "chal";
+	setChallenge("chal");
+	setLogin("Maciek");
+	setPassword("pass");
+	sessionActive = 1;
+}
 
+void Supplicant::setChallenge(char* chal)
+{
+	for (int i = 0; i < strlen(chal); ++i)
+		challenge[i] = chal[i];
+}
+
+void Supplicant::setLogin(char* log)
+{
+	for (int i = 0; i < strlen(log); ++i)
+		login[i] = log[i];
+}
+
+void Supplicant::setPassword(char* pas)
+{
+	for (int i = 0; i < strlen(pas); ++i)
+		password[i] = pas[i];
 }
 
 int Supplicant::eapolStart()
@@ -249,7 +270,7 @@ int Supplicant::listen()
 
 void Supplicant::listenNext()
 {
-	
+	bool breaker = true;
 	char packet_filter[] = "ether proto 0x888E";	//magiczny filtr dopuszczajacy tylko eapol
 	struct bpf_program fcode;
 
@@ -283,7 +304,7 @@ void Supplicant::listenNext()
 	}
 	struct pcap_pkthdr *header; 
 	const u_char *pkt_data;
-	while (1)
+	while (breaker)
 	{
 		int res;
 		res = pcap_next_ex(fp, &header, &pkt_data);
@@ -295,9 +316,10 @@ void Supplicant::listenNext()
 		if (res == 0)
 			continue;
 
+		++packet_counter;	
 
 		int len = header->len;
-		cout << "Listener: Packet Received: Eap:  " << len << endl;
+		cout << "Packet Received: (nr:" <<packet_counter <<")"<< len << endl;
 
 
 		for (int i = 0; i < len; ++i)
@@ -325,11 +347,40 @@ void Supplicant::listenNext()
 				cout << "req" << endl;
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
 				cout << "type:" << endl;
+
 				if (*data == (char)0x1)
-					cout << "JES" << endl;
+				{
+					cout << "Identify" << endl;
+					eapResponseIdentify();
+					//Zawsze jak chcesz wyslac pakiet to breaker = 0 ; to wylaczy listener i dzieki temu nie odczytamy wlasnego pakietu.
+					breaker = 0;
+				}
+
+				//TODO inne pakiety ? Notification(0x2)? Nak(0x3) ?
+
+				if (*data == (char)0x4)
+				{
+					cout << "MD5_Challenge" << endl;
+					data += 2; // [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
+					char temp2[100];
+					for (int i = 0; i < 16; ++i)
+					{
+						temp2[i] = (char)*(data + i);
+					}
+					setChallenge(temp2);
+
+					eapResponseIdentify(); // TODO naprawiæ ramkê MD5 challenge ( patrz 3.4 RFC)
+					//wylacz listener
+					breaker = 0;
+				}
+
+
 				printf("%.2X", *data);
 				break;
 			case 0x02:
+				//illegal packet
+
+				/*
 				cout << "respo" << endl;
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
 				cout << "type:" << endl;
@@ -337,10 +388,19 @@ void Supplicant::listenNext()
 					cout << "JES" << endl;
 				printf("%.2X", *data);
 				eapResponseIdentify();
+				//eapolLogoff();
+				breaker = 0;
 				cout << endl;
+				*/
 				break;
+
 			case 0x03:
-				cout << "succ " << endl;
+				cout << "Success: Client authentication accepted. Access to network granted. " << endl;
+				//Start console
+				//Start packet transmission
+				//when done:
+				// sessionActive = 0;
+				breaker = 0;
 				break;
 			case 0x04:
 				cout << "fail" << endl;
