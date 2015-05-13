@@ -361,7 +361,9 @@ void Supplicant::listenNext()
 				if (*data == (char)0x4)
 				{
 					cout << "MD5_Challenge" << endl;
-					data += 2; // [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
+					//data += 2; ciekawe czy tak moge.
+					data = (char*)(temp + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 2);
+					// [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
 					char temp2[100];
 					for (int i = 0; i < 16; ++i)
 					{
