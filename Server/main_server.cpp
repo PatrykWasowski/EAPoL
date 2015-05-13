@@ -5,19 +5,24 @@ using namespace std;
 
 
 
-void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
-
 
 int main()
 {
+
+	for (int i = 0; i < 6; ++i)
+	{
+		SERVER_MAC[i] = 2;
+	}
+
+
+
 	cout << "server hello" << endl;
-	pcap_if_t *d, *alldevs;
+	pcap_if_t *alldevs;
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
 
-	Server server;
-	server.init();
+	init();
 
 	return 0;
 
