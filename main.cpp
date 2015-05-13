@@ -13,10 +13,12 @@ int main()
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
 	Supplicant s;
 	
+	int i = 19;
+	cout << "i = " << hex << (char)i << endl;
 	s.init();
 	s.eapolStart();
 	//s.eapResponseIdentify();
-	//s.eapResponseChallenge();
+	s.eapResponseChallenge();
 	//s.eapolLogoff();
 	while (s.sessionActive)
 	s.listenNext();

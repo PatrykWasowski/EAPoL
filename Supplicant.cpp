@@ -61,8 +61,8 @@ void Supplicant::init()
 
 	for (int i = 0; i < 6; ++i)
 	{
-		destinationMac[i] = 1;
-		sourceMac[i] = 1;
+		destinationMac[i] = 12;
+		sourceMac[i] = 13;
 	}
 
 	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
@@ -189,7 +189,7 @@ int Supplicant::eapResponseChallenge()
 
 	MD5 md5;
 	md5.add(res2, res.length());
-	cout << md5.getHash() << " skrot" << endl;
+	cout << md5.getHash() << " skrot" << endl;	// tworzenie skrotu opisane w RFC 1994!
 
 	const char *res3 = (md5.getHash()).c_str();
 
@@ -203,22 +203,32 @@ int Supplicant::eapResponseChallenge()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;
-	eth->packet_body_length = sizeof(EAP_HEADER) + 17; // 1 - type , 16 - skrot md5
+	eth->packet_body_length = sizeof(EAP_HEADER) + 18 + strlen(login); // 1 - type , 16 - skrot md5
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
 	eap->identifier = connectionIdentifier;
-	eap->length = htons(0x0011);
+	eap->length = (sizeof(EAP_HEADER) + 18 + strlen(login) );
+	cout << "EAP size: " << sizeof(EAP_HEADER) << endl;
+	cout << strlen(login) << endl;
+	cout << "Len: " << (sizeof(EAP_HEADER) + 18 + strlen(login)) << endl;
 
 	char *data;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
 	*data = 0x4;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 1);
+	int valueSize = 16 + strlen(login);
+	*data = valueSize;
+	++data;
 	for (int i = 0; i < 16; ++i)
 		*(data + i) = md5.getHash()[i];
+	data = data + 16;
+	for (int i = 0; i < strlen(login); ++i)
+		*(data + i) = login[i];
 
 
-	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 17) != 0)
+
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 18 + strlen(login)) != 0)
 	{
 		fprintf(stderr, "\nError sending the EAP-MD5-Challenge Response packet: \n", pcap_geterr(fp));
 		return 1;
