@@ -211,13 +211,17 @@ int Supplicant::listen()
 	char packet_filter[] = "ether proto 0x888E";	//magiczny filtr dopuszczajacy tylko eapol
 	struct bpf_program fcode;
 
+	cout << "!!";
+
 	u_int netmask;
 	if (d->addresses != NULL)
 		/* Retrieve the mask of the first address of the interface */
 		netmask = ((struct sockaddr_in *)(d->addresses->netmask))->sin_addr.S_un.S_addr;
 	else
 		/* If the interface is without addresses we suppose to be in a C class network */
-		netmask = 0xffffff;
+	{
+		netmask = 0xffffff; 
+	}
 
 
 	if (pcap_compile(fp, &fcode, packet_filter, 1, netmask) < 0)
@@ -238,79 +242,122 @@ int Supplicant::listen()
 
 
 	printf("\nlistening on %s...\n", d->description);
-
-
-
-	pcap_loop(fp, 0, Supplicant::packetListener, NULL);
+	
+	//pcap_loop(fp, 0, Listener::packetListener, NULL);
 	return 0;
 }
 
-void Supplicant::packetListener(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data)
+void Supplicant::listenNext()
 {
-	struct tm ltime;
-	char timestr[16];
-	time_t local_tv_sec;
-	u_char temp[100];
+	
+	char packet_filter[] = "ether proto 0x888E";	//magiczny filtr dopuszczajacy tylko eapol
+	struct bpf_program fcode;
 
-	(VOID)(param);
-	(VOID)(pkt_data);
+	cout << "!!";
 
-	int len = header->len;
-	cout << "Listener: Packet Received: Eap: ";
-
-
-	for (int i = 0; i < len; ++i)
+	u_int netmask;
+	if (d->addresses != NULL)
+		/* Retrieve the mask of the first address of the interface */
+		netmask = ((struct sockaddr_in *)(d->addresses->netmask))->sin_addr.S_un.S_addr;
+	else
+		/* If the interface is without addresses we suppose to be in a C class network */
 	{
-		temp[i] = *(pkt_data + i);
+		netmask = 0xffffff;
 	}
-	cout << endl;
-
-	ETHERNET_HEADER* eth;
-	EAP_HEADER* eap;
-	char* data;
-	//data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
-	eth = (ETHERNET_HEADER*)temp;
-	//cout << eth -> packet_type<< endl;
-	//printf("%.2X", eth->packet_type);
 
 
-	switch (eth->packet_type){
-	case 0x00:
-		cout << "packet" << endl;
-		eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
+	if (pcap_compile(fp, &fcode, packet_filter, 1, netmask) < 0)
+	{
+		fprintf(stderr, "\nUnable to compile the packet filter. Check the syntax.\n");
 
-		switch (eap->code){
+
+		return;
+	}
+
+	//set the filter
+	if (pcap_setfilter(fp, &fcode) < 0)
+	{
+		fprintf(stderr, "\nError setting the filter.\n");
+
+		return;
+	}
+	struct pcap_pkthdr *header; 
+	const u_char *pkt_data;
+	while (1)
+	{
+		int res;
+		res = pcap_next_ex(fp, &header, &pkt_data);
+		struct tm ltime;
+		char timestr[16];
+		time_t local_tv_sec;
+		u_char temp[100];
+
+		if (res == 0)
+			continue;
+
+
+		int len = header->len;
+		cout << "Listener: Packet Received: Eap:  " << len << endl;
+
+
+		for (int i = 0; i < len; ++i)
+		{
+			temp[i] = *(pkt_data + i);
+		}
+		cout << endl;
+
+		ETHERNET_HEADER* eth;
+		EAP_HEADER* eap;
+		char* data;
+		//data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
+		eth = (ETHERNET_HEADER*)temp;
+		//cout << eth -> packet_type<< endl;
+		//printf("%.2X", eth->packet_type);
+
+
+		switch (eth->packet_type){
+		case 0x00:
+			cout << "packet" << endl;
+			eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
+
+			switch (eap->code){
+			case 0x01:
+				cout << "req" << endl;
+				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
+				cout << "type:" << endl;
+				if (*data == (char)0x1)
+					cout << "JES" << endl;
+				printf("%.2X", *data);
+				break;
+			case 0x02:
+				cout << "respo" << endl;
+				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
+				cout << "type:" << endl;
+				if (*data == (char)0x1)
+					cout << "JES" << endl;
+				printf("%.2X", *data);
+				eapResponseIdentify();
+				cout << endl;
+				break;
+			case 0x03:
+				cout << "succ " << endl;
+				break;
+			case 0x04:
+				cout << "fail" << endl;
+				break;
+			default:
+				cout << "code: def" << endl;
+			}
+
+			break;
 		case 0x01:
-			cout << "req" << endl;
+			cout << "start" << endl;
 			break;
 		case 0x02:
-			cout << "respo" << endl;
-			data = (char*)(temp + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
-			cout << "type:" << endl;
-			//cout << hex << *data << endl;
-			printf("%.2X", *data);
-			cout << endl;
-			break;
-		case 0x03:
-			cout << "succ " << endl;
-			break;
-		case 0x04:
-			cout << "fail" << endl;
+			cout << "logoff" << endl;
 			break;
 		default:
-			cout << "code: def" << endl;
+			cout << "type: def " << endl;
 		}
-
-		break;
-	case 0x01:
-		cout << "start" << endl;
-		break;
-	case 0x02:
-		cout << "logoff" << endl;
-		break;
-	default:
-		cout << "type: def " << endl;
 	}
-
-
 }

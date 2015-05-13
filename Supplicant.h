@@ -13,7 +13,7 @@ using namespace std;
 class Supplicant
 {
 private:
-	pcap_t* fp;
+	
 	pcap_if_t *d; //d
 	char errbuf[PCAP_ERRBUF_SIZE];
 	u_char destinationMac[6];
@@ -24,6 +24,8 @@ private:
 	char *password;
 
 public:
+	pcap_t* fp;
+
 	Supplicant(){}
 	~Supplicant(){}
 	
@@ -33,8 +35,19 @@ public:
 	int eapResponseIdentify();
 	int eapResponseChallenge();
 	int listen();
-	static void packetListener(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
+	void listenNext();
+	
 	//void setMac(u_char mac [6]);
 	//char* getMac();
-
 };
+/*
+class Listener
+{
+private:
+	static Supplicant& sup;
+
+public:
+	Listener(Supplicant& s){}
+	~Listener(){}
+	void packetListener(u_char *param, const struct pcap_pkthdr *header, const u_char *pkt_data);
+};*/

@@ -18,7 +18,7 @@ int main()
 	s.eapResponseIdentify();
 	s.eapResponseChallenge();
 	s.eapolLogoff();
-	s.listen();
+	s.listenNext();
 
 	system("Pause");
 	return 0;
