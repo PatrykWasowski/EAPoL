@@ -27,6 +27,9 @@
     <ClCompile Include="crc32.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="headers.h">
@@ -42,6 +45,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="crc32.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include <string>
 #include "headers.h"
 #include "md5.h"
+#include "Logger.h"
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -13,7 +14,7 @@ using namespace std;
 class Supplicant
 {
 private:
-	
+	pcap_t* fp;
 	pcap_if_t *d; //d
 	char errbuf[PCAP_ERRBUF_SIZE];
 	u_char destinationMac[6];
@@ -22,12 +23,13 @@ private:
 	u_char connectionIdentifier;
 	char challenge[100];
 	char password[100];
-	int packet_counter;
+	int packetCounter;
+	Logger& logger;
 	//bool sessionActive;
 public:
-	pcap_t* fp;
+	
 	bool sessionActive;
-	Supplicant(){}
+	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
 	void init();
@@ -40,6 +42,8 @@ public:
 	void setChallenge(char* );
 	void setLogin(char*);
 	void setPassword(char* );
+	string getDestinationMac();
+	string getSourceMac();
 	
 	//void setMac(u_char mac [6]);
 	//char* getMac();

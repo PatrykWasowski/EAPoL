@@ -60,11 +60,10 @@ void Supplicant::init()
 		;
 
 	for (int i = 0; i < 6; ++i)
-	{
-		destinationMac[i] = 12;
-		sourceMac[i] = 13;
-	}
-
+		sourceMac[i] = (u_char)0x20;
+	
+	cout << "Adres MAC " << hex << (int)d->addresses->addr->sa_data[0] << (int)d->addresses->addr->sa_data[1] << (int)d->addresses->addr->sa_data[2] << (int)d->addresses->addr->sa_data[3] << (int)d->addresses->addr->sa_data[4] << endl << endl << endl;
+	printf("%.2X\n", d->addresses->addr->sa_data[2]);
 	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
 
 	//login = "Maciek";
@@ -74,6 +73,8 @@ void Supplicant::init()
 	setLogin("Maciek");
 	setPassword("pass");
 	sessionActive = 1;
+	packetCounter = 0;
+
 }
 
 void Supplicant::setChallenge(char* chal)
@@ -326,11 +327,18 @@ void Supplicant::listenNext()
 		if (res == 0)
 			continue;
 
-		++packet_counter;	
+		++packetCounter;
+		string log("");
+		log += getDestinationMac();
+		log += " ";
+		log += getSourceMac();// TODO  ZROBIC KONWERSJE Z UCHAR NA HEX!!!!
+		log += " ";
 
 		int len = header->len;
-		cout << "Packet Received: (nr:" <<packet_counter <<")"<< len << endl;
-
+		cout << "Packet Received: (nr:" << packetCounter << ")" << len << endl;
+		log += "Packet Received: (nr:";
+		log += packetCounter;
+		log += ")";
 
 		for (int i = 0; i < len; ++i)
 		{
@@ -346,21 +354,27 @@ void Supplicant::listenNext()
 		//cout << eth -> packet_type<< endl;
 		//printf("%.2X", eth->packet_type);
 
-
 		switch (eth->packet_type){
 		case 0x00:
 			cout << "packet" << endl;
+			log += " packet EAP-Packet,";
 			eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
 
 			switch (eap->code){
 			case 0x01:
 				cout << "req" << endl;
+				log += " request/";
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
 				cout << "type:" << endl;
 
 				if (*data == (char)0x1)
 				{
 					cout << "Identify" << endl;
+					log += "identify";
+					data = (char*)(temp + 6);
+					for (int i = 0; i < 6; ++i)
+						destinationMac[i] = (u_char)*(data + i);
+
 					eapResponseIdentify();
 					//Zawsze jak chcesz wyslac pakiet to breaker = 0 ; to wylaczy listener i dzieki temu nie odczytamy wlasnego pakietu.
 					breaker = 0;
@@ -371,8 +385,9 @@ void Supplicant::listenNext()
 				if (*data == (char)0x4)
 				{
 					cout << "MD5_Challenge" << endl;
+					log += "MD5-Challenge";
 					//data += 2; ciekawe czy tak moge.
-					data = (char*)(temp + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 2);
+					data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+2);
 					// [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
 					char temp2[100];
 					for (int i = 0; i < 16; ++i)
@@ -397,7 +412,7 @@ void Supplicant::listenNext()
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
 				cout << "type:" << endl;
 				if (*data == (char)0x1)
-					cout << "JES" << endl;
+				cout << "JES" << endl;
 				printf("%.2X", *data);
 				eapResponseIdentify();
 				//eapolLogoff();
@@ -408,6 +423,7 @@ void Supplicant::listenNext()
 
 			case 0x03:
 				cout << "Success: Client authentication accepted. Access to network granted. " << endl;
+				log += " success";
 				//Start console
 				//Start packet transmission
 				//when done:
@@ -416,20 +432,66 @@ void Supplicant::listenNext()
 				break;
 			case 0x04:
 				cout << "fail" << endl;
+				log += " fail";
 				break;
 			default:
 				cout << "code: def" << endl;
+				log += " uknown EAP code";
 			}
 
 			break;
 		case 0x01:
 			cout << "start" << endl;
+			log += " EAPOL-Start";
 			break;
 		case 0x02:
 			cout << "logoff" << endl;
+			log += " EAPOL-Logoff";
 			break;
 		default:
-			cout << "type: def " << endl;
+			cout << "type: unknown  " << endl;
+			log += " unknown type";
 		}
+		log += "\n";
+		cout << "LOG : " << log << endl;
+		logger << log;
 	}
 }
+
+string Supplicant::getDestinationMac()
+{
+	string addr;
+	addr = "";
+
+	for (int i = 0; i<6; ++i){
+
+		char buffer[50];
+		sprintf_s(buffer, "%.2X", destinationMac[i]);
+		string str(buffer);
+		addr += str;
+		if (i != 5)
+			addr += ":";
+	}
+
+	return addr;
+}
+
+string Supplicant::getSourceMac()
+{
+	string addr;
+	addr = "";
+
+	for (int i = 0; i<6; ++i){
+
+		char buffer[50];
+		sprintf_s(buffer, "%.2X", sourceMac[i]);
+		string str(buffer);
+		addr += str;
+		if (i != 5)
+			addr += ":";
+	}
+
+	return addr;
+}
+
+
