@@ -69,7 +69,7 @@ Logger& Logger::operator<< (const T& data) {
 		clock_t clockEnd;
 		clockEnd = clock ();
 		long myTime = (long) (clockEnd - clockBegin);
-		(*outStream) << "[" << (myTime / 1000) << "." << (myTime % 1000) << "] " << '\t' << loggerHeader << '\t' << data;
+		(*outStream) << "[" << (myTime / 1000) << "." << (myTime % 1000) << "] " << '\t' << loggerHeader << '\t' << data; // TODO zmodyfikowac na potrzeby Supplicanta
 	}
 	else
 		(*outStream) << " " << data;
