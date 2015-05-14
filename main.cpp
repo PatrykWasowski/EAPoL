@@ -16,16 +16,16 @@ int main()
 	int i = 19;
 	cout << "i = " << hex << (char)i << endl;
 	s.init();
-	s.eapolStart();
+	//s.eapolStart();
 	//s.eapResponseIdentify();
 	s.eapResponseChallenge();
 	//s.eapolLogoff();
-	while (s.sessionActive)
-	s.listenNext();
+	//while (s.sessionActive)
+	//s.listenNext();
 
 
 	cout << "closing connection" ;
-	s.eapolLogoff();
+	//s.eapolLogoff();
 	cout << "done!"<<endl;
 	system("Pause");
 	return 0;
