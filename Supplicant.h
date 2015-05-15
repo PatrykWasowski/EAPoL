@@ -25,6 +25,7 @@ private:
 	char password[100];
 	int packetCounter;
 	Logger& logger;
+	u_char lastIdentifier;
 	//bool sessionActive;
 public:
 	
@@ -44,6 +45,7 @@ public:
 	void setPassword(char* );
 	string getDestinationMac();
 	string getSourceMac();
+	string convertToHex(u_char*);
 	
 	//void setMac(u_char mac [6]);
 	//char* getMac();

@@ -151,7 +151,7 @@ int EAP_request_identify()
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 1;	//request
-	eap->identifier = CONNECTION_IDENTIFIER;
+	eap->identifier = CONNECTION_IDENTIFIER; // TODO to ma byæ zmienne(losowe?)
 	u_char type = 1;//identify
 	eap->length = htons(sizeof(eap_header) + 1); //1 bajt na type
 
@@ -187,7 +187,7 @@ int EAP_request_MD5()
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 1; //request
-	eap->identifier = CONNECTION_IDENTIFIER;
+	eap->identifier = CONNECTION_IDENTIFIER; //TODO To ma byæ zmienne (losowe?)
 	eap->length = htons((sizeof(EAP_HEADER) + 2 + strlen(CHALLENGE_STRING)));	//1 bajt na type, 1 bajt na dlugosc challenge_Stringa
 	u_char type = 4;//MD5-challenge
 
@@ -347,7 +347,7 @@ void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_cha
 		EAP_request_identify();
 		break;
 	case 0: //eap-packet
-		EAP_HEADER* eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
+		eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
 		printf("\teap->code pakietu: %d\n", eap->code);
 		switch (eap->code){
 		case 2://response

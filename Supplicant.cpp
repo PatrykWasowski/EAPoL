@@ -71,7 +71,7 @@ void Supplicant::init()
 	//challenge = "chal";
 	setChallenge("chal");
 	setLogin("Maciek");
-	setPassword("pass");
+	setPassword("PASSWORD");
 	sessionActive = 1;
 	packetCounter = 0;
 
@@ -158,7 +158,7 @@ int Supplicant::eapResponseIdentify()
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
-	eap->identifier = connectionIdentifier;
+	eap->identifier = lastIdentifier;
 	eap->length = htons(0x0006);
 
 	cout << strlen(login) << endl;
@@ -182,9 +182,26 @@ int Supplicant::eapResponseIdentify()
 
 int Supplicant::eapResponseChallenge()
 {
+	/*
+	char id_pas_chal[100];
+	strcpy(id_pas_chal, (char*)&lastIdentifier); 
+	strcat(id_pas_chal, (char*)password);
+	strcat(id_pas_chal, (char*)challenge); 
+	printf("ident+secret+challenge: %s\n", id_pas_chal);
+
+
+	string id((char)lastIdentifier);
+	char b[10];
+	sprintf_s(b, "%.2X", lastIdentifier);
+	string id(b);
+
+	cout << endl << "Identifier:" << id << endl;
+	*/
 	string pas(password);
 	string cha(challenge);
 	string res = pas + cha;
+
+	cout << "res:" << res << endl;
 
 	const char *res2 = res.c_str();
 
@@ -204,12 +221,12 @@ int Supplicant::eapResponseChallenge()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;
-	eth->packet_body_length = sizeof(EAP_HEADER) + 18 + strlen(login); // 1 - type , 16 - skrot md5
+	eth->packet_body_length = htons ( sizeof(EAP_HEADER) + 18 + strlen(login)); // 1 - type , 16 - skrot md5
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
-	eap->identifier = connectionIdentifier;
-	eap->length = (sizeof(EAP_HEADER) + 18 + strlen(login) );
+	eap->identifier = lastIdentifier;
+	eap->length =htons( (sizeof(EAP_HEADER) + 18 + strlen(login) ));
 	cout << "EAP size: " << sizeof(EAP_HEADER) << endl;
 	cout << strlen(login) << endl;
 	cout << "Len: " << (sizeof(EAP_HEADER) + 18 + strlen(login)) << endl;
@@ -221,8 +238,28 @@ int Supplicant::eapResponseChallenge()
 	int valueSize = 16 + strlen(login);
 	*data = valueSize;
 	++data;
+
+	/*
 	for (int i = 0; i < 16; ++i)
 		*(data + i) = md5.getHash()[i];
+	*/
+	u_char temp[17];
+	//for (int i = 0; i < 32; ++i)
+		//temp[i] = md5.getHash()[i];
+	//string temp2;
+	md5.getHash(temp);
+	/*
+	printf("MD5:");
+	for (int i = 0; i < 16; ++i)
+		printf(" %.2X", temp[i]);
+	printf("\n");
+	*/
+	//temp2 = convertToHex(temp);
+	//cout <<"MD12:" <<temp2<<endl;
+
+	for (int i = 0; i < 16; ++i)
+		*(data + i) = temp[i];
+
 	data = data + 16;
 	for (int i = 0; i < strlen(login); ++i)
 		*(data + i) = login[i];
@@ -327,6 +364,9 @@ void Supplicant::listenNext()
 		if (res == 0)
 			continue;
 
+
+
+
 		++packetCounter;
 		string log("");
 		log += getDestinationMac();
@@ -360,13 +400,14 @@ void Supplicant::listenNext()
 			log += " packet EAP-Packet,";
 			eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
 
+			lastIdentifier = eap->identifier;
+
 			switch (eap->code){
 			case 0x01:
 				cout << "req" << endl;
 				log += " request/";
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
 				cout << "type:" << endl;
-
 				if (*data == (char)0x1)
 				{
 					cout << "Identify" << endl;
@@ -396,7 +437,7 @@ void Supplicant::listenNext()
 					}
 					setChallenge(temp2);
 
-					eapResponseIdentify(); // TODO naprawiæ ramkê MD5 challenge ( patrz 3.4 RFC)
+					eapResponseChallenge(); 
 					//wylacz listener
 					breaker = 0;
 				}
@@ -474,6 +515,22 @@ string Supplicant::getDestinationMac()
 	}
 
 	return addr;
+}
+
+string Supplicant::convertToHex(u_char* t)
+{
+	string out;
+	out = "";
+
+	for (int i = 0; i<32; ++i){
+
+		char buffer[50];
+		sprintf_s(buffer, "%.2X", t[i]);
+		string str(buffer);
+		out += str;
+	}
+
+	return out;
 }
 
 string Supplicant::getSourceMac()
