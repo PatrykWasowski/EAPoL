@@ -16,7 +16,7 @@ u_char SERVER_MAC[6];
 
 char CHALLENGE_STRING[]="CHALLENGE";
 u_char PASSWORD[] = "PASSWORD";
-u_char CONNECTION_IDENTIFIER=123;
+u_char CONNECTION_IDENTIFIER=64;
 
 pcap_t *fp;
 
@@ -271,7 +271,7 @@ bool validate_hashes(u_char *eap_header_adress){
 	if (*value_size != 16){
 		printf("dlugosc value_size nie jest rowna 16. czy do hasha doklejono cos jeszcze? wartosc dlugosci: %d\n", *value_size);
 	}
-	char hash_from_packet[16];
+	u_char hash_from_packet[16];
 	printf("odebrany hash:\n");
 	char* hash_packet_adress = (char*)value_size + 1;
 	for (int i = 0; i < 16; i++){
@@ -290,13 +290,25 @@ bool validate_hashes(u_char *eap_header_adress){
 
 	MD5 md5;
 	md5.add(id_pas_chal, strlen(id_pas_chal));
+	std::cout << "Hash string: " << md5.getHash() << std::endl ;
 	const char* calculated_hash = (md5.getHash()).c_str();
-	printf("obliczony hash: %s", calculated_hash);
+	printf("Hash: \n");
+	std::cout << calculated_hash << std::endl;
+	for (int i = 0; i < md5.getHash().length(); ++i)
+		printf("%c", md5.getHash()[i]);
+
+	printf("Odebrany hash\n");
+	for (int i = 0; i < 16; ++i)
+		printf("%.2X", hash_from_packet[i]);
+
+	u_char temp[17];
+	md5.getHash(temp);
 
 	//POROWNANIE WARTOSCI WYLICZONEJ Z HASHEM Z PAKIETU
 	bool hashes_match = true;
 	for (int i = 0; i < 16; i++){
-		if (hash_from_packet[i] != calculated_hash[i]){
+		printf("%.2X - %.2X\n", hash_from_packet[i], temp[i]);
+		if (hash_from_packet[i] != temp[i]){
 			hashes_match = false;
 		}
 	}

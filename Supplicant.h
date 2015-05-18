@@ -19,10 +19,10 @@ private:
 	char errbuf[PCAP_ERRBUF_SIZE];
 	u_char destinationMac[6];
 	u_char sourceMac[6];
-	char login[100];
+	string login;
 	u_char connectionIdentifier;
-	char challenge[100];
-	char password[100];
+	string challenge;
+	string password;
 	int packetCounter;
 	Logger& logger;
 	u_char lastIdentifier;
@@ -40,9 +40,9 @@ public:
 	int eapResponseChallenge();
 	int listen();
 	void listenNext();
-	void setChallenge(char* );
-	void setLogin(char*);
-	void setPassword(char* );
+	void setChallenge(string);
+	void setLogin(string);
+	void setPassword(string);
 	string getDestinationMac();
 	string getSourceMac();
 	string convertToHex(u_char*);

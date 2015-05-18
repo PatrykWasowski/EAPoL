@@ -69,30 +69,30 @@ void Supplicant::init()
 	//login = "Maciek";
 	//password = "pass";
 	//challenge = "chal";
-	setChallenge("chal");
+	setChallenge("CHALLENGE");
 	setLogin("Maciek");
 	setPassword("PASSWORD");
 	sessionActive = 1;
 	packetCounter = 0;
+	lastIdentifier = (u_char)0x40;
 
 }
 
-void Supplicant::setChallenge(char* chal)
+void Supplicant::setChallenge(string cha)
 {
-	for (int i = 0; i < strlen(chal); ++i)
-		challenge[i] = chal[i];
+	/*for (int i = 0; i < strlen(chal); ++i)
+		challenge[i] = chal[i];*/
+	challenge = cha;
 }
 
-void Supplicant::setLogin(char* log)
+void Supplicant::setLogin(string log)
 {
-	for (int i = 0; i < strlen(log); ++i)
-		login[i] = log[i];
+	login = log;
 }
 
-void Supplicant::setPassword(char* pas)
+void Supplicant::setPassword(string pas)
 {
-	for (int i = 0; i < strlen(pas); ++i)
-		password[i] = pas[i];
+	password = pas;
 }
 
 int Supplicant::eapolStart()
@@ -154,24 +154,24 @@ int Supplicant::eapResponseIdentify()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;
-	eth->packet_body_length = sizeof(EAP_HEADER) + strlen(login);
+	eth->packet_body_length = sizeof(EAP_HEADER) + login.length();
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
 	eap->identifier = lastIdentifier;
 	eap->length = htons(0x0006);
 
-	cout << strlen(login) << endl;
+	//cout << strlen(login) << endl;
 
 	char* data;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
 	*data = 0x1;
 	data = (char*)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 1);
-	strcpy_s(data, strlen(login) + 1, login);
+	strcpy_s(data, login.length() + 1, login.c_str());
 
-	cout << sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + strlen(login) + 1 << endl; //TODO sprawdziæ czy œmiga
+	cout << sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + login.length() + 1 << endl; //TODO sprawdziæ czy œmiga
 
-	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + strlen(login) + 1) != 0)
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + login.length() + 1) != 0)
 	{
 		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
 		return 1;
@@ -182,24 +182,7 @@ int Supplicant::eapResponseIdentify()
 
 int Supplicant::eapResponseChallenge()
 {
-	/*
-	char id_pas_chal[100];
-	strcpy(id_pas_chal, (char*)&lastIdentifier); 
-	strcat(id_pas_chal, (char*)password);
-	strcat(id_pas_chal, (char*)challenge); 
-	printf("ident+secret+challenge: %s\n", id_pas_chal);
-
-
-	string id((char)lastIdentifier);
-	char b[10];
-	sprintf_s(b, "%.2X", lastIdentifier);
-	string id(b);
-
-	cout << endl << "Identifier:" << id << endl;
-	*/
-	string pas(password);
-	string cha(challenge);
-	string res = pas + cha;
+	string res = (char)lastIdentifier + password + challenge;
 
 	cout << "res:" << res << endl;
 
@@ -221,21 +204,21 @@ int Supplicant::eapResponseChallenge()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;
-	eth->packet_body_length = htons ( sizeof(EAP_HEADER) + 18 + strlen(login)); // 1 - type , 16 - skrot md5
+	eth->packet_body_length = htons ( sizeof(EAP_HEADER) + 18 + login.length()); // 1 - type , 16 - skrot md5
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
 	eap->identifier = lastIdentifier;
-	eap->length =htons( (sizeof(EAP_HEADER) + 18 + strlen(login) ));
+	eap->length =htons( (sizeof(EAP_HEADER) + 18 + login.length() ));
 	cout << "EAP size: " << sizeof(EAP_HEADER) << endl;
-	cout << strlen(login) << endl;
-	cout << "Len: " << (sizeof(EAP_HEADER) + 18 + strlen(login)) << endl;
+	cout << login.length() << endl;
+	cout << "Len: " << (sizeof(EAP_HEADER) + 18 + login.length()) << endl;
 
 	char *data;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
 	*data = 0x4;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 1);
-	int valueSize = 16 + strlen(login);
+	int valueSize = 16 + login.length();
 	*data = valueSize;
 	++data;
 
@@ -257,16 +240,19 @@ int Supplicant::eapResponseChallenge()
 	//temp2 = convertToHex(temp);
 	//cout <<"MD12:" <<temp2<<endl;
 
+	cout << " Wysylany hash: " << endl;
 	for (int i = 0; i < 16; ++i)
+	{
 		*(data + i) = temp[i];
-
+		cout << temp[i];
+	}
 	data = data + 16;
-	for (int i = 0; i < strlen(login); ++i)
+	for (int i = 0; i < login.length(); ++i)
 		*(data + i) = login[i];
 
 
 
-	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 18 + strlen(login)) != 0)
+	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 18 + login.length()) != 0)
 	{
 		fprintf(stderr, "\nError sending the EAP-MD5-Challenge Response packet: \n", pcap_geterr(fp));
 		return 1;
@@ -364,9 +350,6 @@ void Supplicant::listenNext()
 		if (res == 0)
 			continue;
 
-
-
-
 		++packetCounter;
 		string log("");
 		log += getDestinationMac();
@@ -428,14 +411,20 @@ void Supplicant::listenNext()
 					cout << "MD5_Challenge" << endl;
 					log += "MD5-Challenge";
 					//data += 2; ciekawe czy tak moge.
-					data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+2);
+					data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+1);
+					int valueSize = *data;
+					cout << valueSize << " valueSize" << endl;
 					// [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
 					char temp2[100];
-					for (int i = 0; i < 16; ++i)
+					cout << "poczatkowa temp2 " << strlen(temp2) << endl;
+					++data;
+					string jakis("");
+					for (int i = 0; i < valueSize; ++i)
 					{
-						temp2[i] = (char)*(data + i);
+						jakis += (char)*(data + i);
 					}
-					setChallenge(temp2);
+					cout << "jakis " << jakis << " dlugosc " << jakis.length()<< endl;
+					setChallenge(jakis);
 
 					eapResponseChallenge(); 
 					//wylacz listener
