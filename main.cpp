@@ -1,11 +1,17 @@
 #include <iostream>
 #include "Supplicant.h"
+#include "Config.h"
 #include <pcap.h>
 
 using namespace std;
 
 int main()
 {
+
+	Config c;
+	c.parse_config("CONFIG.txt");
+
+
 	cout << "Hello world" << endl;
 	pcap_if_t *d, *alldevs;
 
