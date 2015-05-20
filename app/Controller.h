@@ -19,6 +19,8 @@ public:
 	void sendMessagge (const std::string& msg);
 	void setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c);
 
+	bool running ();
+	bool connection ();
 
 private:
 	ButtonManager btnManager;
@@ -28,10 +30,13 @@ private:
 	void performAction (const Gui::GuiEvent& event);
 	int debug = 0;
 	
+	std::mutex runMutex;
 	std::mutex* mtx;
 	std::condition_variable* cv;
-	bool* ready;
 
+	bool* ready;
+	bool r = true;
+	bool c = false;
 	void connect ();
 
 };

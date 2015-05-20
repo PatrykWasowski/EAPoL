@@ -48,6 +48,9 @@ void Controller::manageEvents (const sf::Event& event) {
 			ev = txtFldManager.manageTextInput (event);
 		debugEvent ("key ", ev);
 	}
+	if (event.type == sf::Event::Closed) {
+		performAction (Gui::GuiEvent::CLOSE);
+	}
 }
 
 void Controller::debugEvent (std::string from, Gui::GuiEvent event) {
@@ -103,7 +106,11 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 			// order thread to stop
 			break;
 		case Gui::CLOSE:
-			//close app
+			
+			runMutex.lock ();
+			r = false;
+			runMutex.unlock ();
+			connect ();
 			break;
 		case Gui::MINIMIZE:
 			// minimize app
@@ -131,4 +138,8 @@ void Controller::connect () {
 	std::unique_lock<std::mutex> lck (*mtx);
 	(*ready) = true;
 	cv->notify_all ();
+}
+
+bool Controller::running () {
+	return r;
 }

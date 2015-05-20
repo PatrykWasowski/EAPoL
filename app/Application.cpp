@@ -1,7 +1,7 @@
 #include "Application.h"
 
 
-Application::Application (Controller& contrl) : controller (contrl) {
+Application::Application (Controller* contrl) : controller (contrl) {
 }
 
 
@@ -19,7 +19,7 @@ void Application::initialize () {
 	window.setKeyRepeatEnabled (false);
 	window.setFramerateLimit (60);
 
-	controller.initManagers (window);
+	controller->initManagers (window);
 
 //	Logger::getInstance () << "Initialization Completed" << std::endl;
 }
@@ -31,10 +31,10 @@ void Application::run () {
 		while (window.pollEvent (event)) {
 			if (event.type == sf::Event::Closed)
 					window.close ();
-			controller.manageEvents (event);
+			controller->manageEvents (event);
 		}
 		window.clear (sf::Color(60,60,60,255));
-		controller.draw ();
+		controller->draw ();
 		window.display ();
 	}
 
