@@ -2,15 +2,17 @@
 
 using namespace std;
 
-void Supplicant::init(Controller* contr)
+void Supplicant::init (Controller* cont, u_char* supadd)
 {
-	controller = contr;
+	controller = cont;
 	pcap_if_t *alldevs;
 	//pcap_if_t *d;
 	int inum;
 	int i = 0;
 	pcap_t *adhandle;
 	char errbuf[PCAP_ERRBUF_SIZE];
+
+	cout << "List of interfaces:" << endl;
 
 	/* Retrieve the device list on the local machine */
 	if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, &alldevs, errbuf) == -1)
@@ -60,11 +62,10 @@ void Supplicant::init(Controller* contr)
 		;
 
 	for (int i = 0; i < 6; ++i)
-		sourceMac[i] = (u_char)0x20;
+		//sourceMac[i] = (u_char)0x20;
+		sourceMac[i] = (u_char)supadd[i];
 	
-	cout << "Adres MAC " << hex << (int)d->addresses->addr->sa_data[0] << (int)d->addresses->addr->sa_data[1] << (int)d->addresses->addr->sa_data[2] << (int)d->addresses->addr->sa_data[3] << (int)d->addresses->addr->sa_data[4] << endl << endl << endl;
-	printf("%.2X\n", d->addresses->addr->sa_data[2]);
-	connectionIdentifier = 0x0;		// TODO: ARAP MUSI WYZNACZYC, A MY MUSIMY TO ODEBRAC!
+	connectionIdentifier = 0x0;		
 
 	//login = "Maciek";
 	//password = "pass";
@@ -97,6 +98,17 @@ void Supplicant::setPassword(string pas)
 
 int Supplicant::eapolStart()
 {
+	string log("");
+	log += getDestinationMac();
+	log += " ";
+	log += getSourceMac();
+	log += " ";
+	cout << "Sending packet:" << endl;
+	
+
+
+
+	
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
 
@@ -113,6 +125,11 @@ int Supplicant::eapolStart()
 		fprintf(stderr, "\nError sending the EAPOL-Start packet: \n", pcap_geterr(fp));
 		return 1;
 	}
+	log += "Packet sent: EAP-Packet, Start";
+	log += "\n";
+	cout << "LOG: " << log ;
+	logger << log;
+
 
 	return 0;
 }
@@ -120,6 +137,14 @@ int Supplicant::eapolStart()
 
 int Supplicant::eapolLogoff()
 {
+	string log("");
+	log += getDestinationMac();
+	log += " ";
+	log += getSourceMac();
+	log += " ";
+	cout << "Sending packet:" << endl;
+
+
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
 
@@ -137,6 +162,11 @@ int Supplicant::eapolLogoff()
 		return 1;
 	}
 
+	log += "Packet sent: EAP-Packet, Logoff";
+	log += "\n";
+	cout << "LOG: " << log << endl;
+	logger << log;
+
 	return 0;
 }
 
@@ -144,6 +174,13 @@ int Supplicant::eapolLogoff()
 
 int Supplicant::eapResponseIdentify()
 {
+	string log("");
+	log += getDestinationMac();
+	log += " ";
+	log += getSourceMac();
+	log += " ";
+	cout << "Sending packet:" << endl;
+
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
 	EAP_HEADER* eap;
@@ -169,7 +206,7 @@ int Supplicant::eapResponseIdentify()
 	data = (char*)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + 1);
 	strcpy_s(data, login.length() + 1, login.c_str());
 
-	cout << sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + login.length() + 1 << endl; //TODO sprawdziæ czy œmiga
+	//cout << sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + login.length() + 1 << endl;
 
 	if (pcap_sendpacket(fp, packet_buffer, sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER) + login.length() + 1) != 0)
 	{
@@ -177,20 +214,32 @@ int Supplicant::eapResponseIdentify()
 		return 1;
 	}
 
+	log += "Packet sent: EAP-Packet, Response/Identify";
+	log += "\n";
+	cout << "LOG: " << log ;
+	logger << log;
+
 	return 0;
 }
 
 int Supplicant::eapResponseChallenge()
 {
+
+	string log("");
+	log += getDestinationMac();
+	log += " ";
+	log += getSourceMac();
+	log += " ";
+	cout << "Sending packet:" << endl;
+
 	string res = (char)lastIdentifier + password + challenge;
 
-	cout << "res:" << res << endl;
+	//cout << "Sending response:" << res << endl;
 
 	const char *res2 = res.c_str();
-
 	MD5 md5;
 	md5.add(res2, res.length());
-	cout << md5.getHash() << " skrot" << endl;	// tworzenie skrotu opisane w RFC 1994!
+	//cout << "MD5:"<<md5.getHash()<< endl;	// tworzenie skrotu opisane w RFC 1994!
 
 	const char *res3 = (md5.getHash()).c_str();
 
@@ -210,9 +259,9 @@ int Supplicant::eapResponseChallenge()
 	eap->code = 2;
 	eap->identifier = lastIdentifier;
 	eap->length =htons( (sizeof(EAP_HEADER) + 18 + login.length() ));
-	cout << "EAP size: " << sizeof(EAP_HEADER) << endl;
-	cout << login.length() << endl;
-	cout << "Len: " << (sizeof(EAP_HEADER) + 18 + login.length()) << endl;
+	//cout << "EAP size: " << sizeof(EAP_HEADER) << endl;
+	//cout << login.length() << endl;
+	//cout << "Len: " << (sizeof(EAP_HEADER) + 18 + login.length()) << endl;
 
 	char *data;
 	data = (char *)(packet_buffer + sizeof(ETHERNET_HEADER) + sizeof(EAP_HEADER));
@@ -222,30 +271,16 @@ int Supplicant::eapResponseChallenge()
 	*data = valueSize;
 	++data;
 
-	/*
-	for (int i = 0; i < 16; ++i)
-		*(data + i) = md5.getHash()[i];
-	*/
+	
 	u_char temp[17];
-	//for (int i = 0; i < 32; ++i)
-		//temp[i] = md5.getHash()[i];
-	//string temp2;
 	md5.getHash(temp);
-	/*
-	printf("MD5:");
-	for (int i = 0; i < 16; ++i)
-		printf(" %.2X", temp[i]);
-	printf("\n");
-	*/
-	//temp2 = convertToHex(temp);
-	//cout <<"MD12:" <<temp2<<endl;
-
-	cout << " Wysylany hash: " << endl;
+	//cout << " Wysylany hash: ";
 	for (int i = 0; i < 16; ++i)
 	{
 		*(data + i) = temp[i];
-		cout << temp[i];
+		//cout << (int)temp[i];
 	}
+	//cout << endl;
 	data = data + 16;
 	for (int i = 0; i < login.length(); ++i)
 		*(data + i) = login[i];
@@ -257,6 +292,12 @@ int Supplicant::eapResponseChallenge()
 		fprintf(stderr, "\nError sending the EAP-MD5-Challenge Response packet: \n", pcap_geterr(fp));
 		return 1;
 	}
+
+
+	log += "Packet sent: EAP-Packet, Response/MD5-Challenge";
+	log += "\n";
+	cout << "LOG: " << log;
+	logger << log;
 
 	return 0;
 }
@@ -304,11 +345,11 @@ int Supplicant::listen()
 
 void Supplicant::listenNext()
 {
+	cout << "Listening for response..." << endl<< endl;
 	bool breaker = true;
 	char packet_filter[] = "ether proto 0x888E";	//magiczny filtr dopuszczajacy tylko eapol
 	struct bpf_program fcode;
 
-	cout << "!!";
 
 	u_int netmask;
 	if (d->addresses != NULL)
@@ -354,14 +395,14 @@ void Supplicant::listenNext()
 		string log("");
 		log += getDestinationMac();
 		log += " ";
-		log += getSourceMac();// TODO  ZROBIC KONWERSJE Z UCHAR NA HEX!!!!
+		log += getSourceMac();
 		log += " ";
 
 		int len = header->len;
-		cout << "Packet Received: (nr:" << packetCounter << ")" << len << endl;
-		log += "Packet Received: (nr:";
-		log += packetCounter;
-		log += ")";
+		cout << "Packet Received: (nr:" << packetCounter << "), length:" << len ;
+		log += "Packet Received:"; // (nr:";
+		//log += (char)packetCounter;
+		//log += ")";
 
 		for (int i = 0; i < len; ++i)
 		{
@@ -379,90 +420,93 @@ void Supplicant::listenNext()
 
 		switch (eth->packet_type){
 		case 0x00:
-			cout << "packet" << endl;
-			log += " packet EAP-Packet,";
+			//cout << "packet" << endl;
+			log += " EAP-Packet,";
 			eap = (EAP_HEADER*)(temp + sizeof(ETHERNET_HEADER));
 
 			lastIdentifier = eap->identifier;
 
 			switch (eap->code){
 			case 0x01:
-				cout << "req" << endl;
+				//cout << "req" << endl;
 				log += " request/";
 				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
-				cout << "type:" << endl;
+				//cout << "type:" << endl;
 				if (*data == (char)0x1)
 				{
-					cout << "Identify" << endl;
+					//cout << "Identify" << endl;
 					log += "identify";
 					data = (char*)(temp + 6);
 					for (int i = 0; i < 6; ++i)
 						destinationMac[i] = (u_char)*(data + i);
 
+					log += "\n";
+					cout << "LOG: " << log ;
+					logger << log;
+
 					eapResponseIdentify();
-					//Zawsze jak chcesz wyslac pakiet to breaker = 0 ; to wylaczy listener i dzieki temu nie odczytamy wlasnego pakietu.
 					breaker = 0;
 				}
-
-				//TODO inne pakiety ? Notification(0x2)? Nak(0x3) ?
 
 				if (*data == (char)0x4)
 				{
-					cout << "MD5_Challenge" << endl;
+					//cout << "MD5_Challenge" << endl;
 					log += "MD5-Challenge";
-					//data += 2; ciekawe czy tak moge.
 					data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER)+1);
 					int valueSize = *data;
-					cout << valueSize << " valueSize" << endl;
-					// [type(1)][value_size(1)!!][value][name] // TODO sprawdzic(3.4 RFC);
-					char temp2[100];
-					cout << "poczatkowa temp2 " << strlen(temp2) << endl;
 					++data;
-					string jakis("");
+					string receivedChallenge("");
 					for (int i = 0; i < valueSize; ++i)
 					{
-						jakis += (char)*(data + i);
+						receivedChallenge += (char)*(data + i);
 					}
-					cout << "jakis " << jakis << " dlugosc " << jakis.length()<< endl;
-					setChallenge(jakis);
+					setChallenge(receivedChallenge);
+
+
+					log += "\n";
+					cout << "LOG: " << log ;
+					logger << log;
 
 					eapResponseChallenge(); 
-					//wylacz listener
 					breaker = 0;
 				}
 
 
-				printf("%.2X", *data);
+				//printf("%.2X", *data);
 				break;
 			case 0x02:
 				//illegal packet
-
-				/*
-				cout << "respo" << endl;
-				data = (char*)(temp + sizeof(ETHERNET_HEADER)+sizeof(EAP_HEADER));
-				cout << "type:" << endl;
-				if (*data == (char)0x1)
-				cout << "JES" << endl;
-				printf("%.2X", *data);
-				eapResponseIdentify();
-				//eapolLogoff();
-				breaker = 0;
-				cout << endl;
-				*/
 				break;
 
 			case 0x03:
+				log += "\n";
+				cout << "LOG: " << log;
+				logger << log;
+
+
 				cout << "Success: Client authentication accepted. Access to network granted. " << endl;
 				log += " success";
 				//Start console
 				//Start packet transmission
+				cout << ".\n.\n." << endl;
+
 				//when done:
-				// sessionActive = 0;
+				 sessionActive = 0;
 				breaker = 0;
+
+				
+
 				break;
 			case 0x04:
-				cout << "fail" << endl;
 				log += " fail";
+				log += "\n";
+				cout << "LOG: " << log;
+				logger << log;
+				cout << "!!" << endl;
+				cout << "Fail: Client authentication FAILED: Received negative response from RADIUS. " << endl;
+				
+				breaker = 0;
+				sessionActive = 0;
 				break;
 			default:
 				cout << "code: def" << endl;
@@ -471,20 +515,18 @@ void Supplicant::listenNext()
 
 			break;
 		case 0x01:
-			cout << "start" << endl;
+			//cout << "start" << endl;
 			log += " EAPOL-Start";
 			break;
 		case 0x02:
-			cout << "logoff" << endl;
+			//cout << "logoff" << endl;
 			log += " EAPOL-Logoff";
 			break;
 		default:
 			cout << "type: unknown  " << endl;
 			log += " unknown type";
 		}
-		log += "\n";
-		cout << "LOG : " << log << endl;
-		logger << log;
+		
 	}
 }
 

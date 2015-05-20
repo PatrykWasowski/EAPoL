@@ -6,7 +6,6 @@
 #include "headers.h"
 #include "md5.h"
 #include "Logger.h"
-#include "app\Controller.h"
 
 #pragma comment(lib,"ws2_32.lib")
 
@@ -27,16 +26,18 @@ private:
 	int packetCounter;
 	Logger& logger;
 	u_char lastIdentifier;
-
-	Controller* controller;
 	//bool sessionActive;
+	
+	Controller* controller;
+
+
 public:
 	
 	bool sessionActive;
 	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
-	void init (Controller* contr);
+	void init (Controller*, u_char*);
 	int eapolStart();
 	int eapolLogoff();
 	int eapResponseIdentify();

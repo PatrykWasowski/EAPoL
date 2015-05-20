@@ -27,10 +27,12 @@ void funkcjathreada (Controller* controller) {
 
 		int i = 19;
 		cout << "i = " << hex << (char) i << endl;
-		s.init (controller);
+		s.init (controller, c.supplicant_mac);
+		//s.init (controller);
 			
 		std::unique_lock<std::mutex> lck (mtx);
 		while (!ready) cv.wait (lck);
+
 		s.eapolStart ();
 
 		controller->sendMessagge ("costam");

@@ -19,6 +19,8 @@ public:
 	void sendMessagge (const std::string& msg);
 	void setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c);
 
+	std::vector<std::string> getData ();
+
 	bool running ();
 	bool connection ();
 

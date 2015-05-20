@@ -143,3 +143,7 @@ void Controller::connect () {
 bool Controller::running () {
 	return r;
 }
+
+std::vector<std::string> Controller::getData () {
+	return txtFldManager.getData ();
+}

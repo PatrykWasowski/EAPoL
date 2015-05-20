@@ -39,7 +39,7 @@ int Config::parse_config(string path){
 				split(tokens[2], ':', mac_tokens);
 				for (int i = 0; i < 6; i++){
 					istringstream iss(mac_tokens[i]);
-					iss >> supplicant_mac[i];
+					iss >>supplicant_mac[i];
 				}
 			}
 			else{
@@ -49,7 +49,7 @@ int Config::parse_config(string path){
 			
 	}
 
-	cout << "zakonczono wczytywanie konfiguracji\n";
+	cout << "Loading config file - Done!\n";
 	cout << "\tconnection_mode: " << connection_mode<<endl;
 	cout << "\tserver_mac: ";
 	for (int i = 0; i < 6; i++){
@@ -58,7 +58,7 @@ int Config::parse_config(string path){
 	}
 	cout << "\n\tsupplicant_mac: ";
 	for (int i = 0; i < 6; i++){
-		printf("%c", supplicant_mac[i]);
+		printf("%.2X", supplicant_mac[i]);
 		if (i < 5) printf(":");
 	}
 	cout << endl<<endl;
