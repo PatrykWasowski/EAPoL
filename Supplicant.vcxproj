@@ -44,13 +44,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)WpdPack\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WpdPack\Include;%(AdditionalIncludeDirectories);./SFML/include</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_MBCS;WIN32;HAVE_REMOTE;WPCAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)WpdPack\Lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wpcap.lib;Packet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)WpdPack\Lib;%(AdditionalLibraryDirectories);./SFML/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wpcap.lib;Packet.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>
@@ -64,14 +64,25 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>./WpdPack/Include;./SFML/include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;WIN32;HAVE_REMOTE;WPCAP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;wpcap.lib;Packet.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>./WpdPack/Lib;./SFML/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="app\Application.cpp" />
+    <ClCompile Include="app\Controller.cpp" />
+    <ClCompile Include="app\GUI\Button.cpp" />
+    <ClCompile Include="app\GUI\ButtonManager.cpp" />
+    <ClCompile Include="app\GUI\Console.cpp" />
+    <ClCompile Include="app\GUI\TextField.cpp" />
+    <ClCompile Include="app\GUI\TextFieldManager.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="crc32.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -80,6 +91,14 @@
     <ClCompile Include="Supplicant.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="app\Application.h" />
+    <ClInclude Include="app\Controller.h" />
+    <ClInclude Include="app\GuiEvent.h" />
+    <ClInclude Include="app\GUI\Button.h" />
+    <ClInclude Include="app\GUI\ButtonManager.h" />
+    <ClInclude Include="app\GUI\Console.h" />
+    <ClInclude Include="app\GUI\TextField.h" />
+    <ClInclude Include="app\GUI\TextFieldManager.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="crc32.h" />
     <ClInclude Include="headers.h" />

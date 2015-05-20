@@ -1,6 +1,7 @@
 #include <iostream>
 #include <pcap.h>
 #include "Server.h"
+
 using namespace std;
 
 
@@ -11,8 +12,6 @@ int main()
 	{
 		SERVER_MAC[i] = 2;
 	}
-
-
 
 	cout << "server hello" << endl;
 	cout << strlen(CHALLENGE_STRING)<<endl;

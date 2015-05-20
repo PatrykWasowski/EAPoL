@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="gui">
+      <UniqueIdentifier>{3d4e99da-2de4-4c78-8fa3-b977010259f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\headers">
+      <UniqueIdentifier>{e56c4ecd-36d4-4729-87cb-f88e405a19d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gui\source">
+      <UniqueIdentifier>{fa7d04c6-07f8-45c7-86a5-3d3b08ec2ad5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -32,6 +41,27 @@
     </ClCompile>
     <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="app\Controller.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\Application.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\GUI\Button.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\GUI\ButtonManager.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\GUI\Console.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\GUI\TextField.cpp">
+      <Filter>gui\source</Filter>
+    </ClCompile>
+    <ClCompile Include="app\GUI\TextFieldManager.cpp">
+      <Filter>gui\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -55,6 +85,30 @@
     </ClInclude>
     <ClInclude Include="Config.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app\Application.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\Controller.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GuiEvent.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\Button.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\ButtonManager.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\Console.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\TextField.h">
+      <Filter>gui\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\TextFieldManager.h">
+      <Filter>gui\headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

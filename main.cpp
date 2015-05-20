@@ -2,11 +2,17 @@
 #include "Supplicant.h"
 #include "Config.h"
 #include <pcap.h>
+#include "./app/Application.h"
 
 using namespace std;
 
 int main()
 {
+	Application app;
+	app.initialize ();
+	app.run ();
+
+
 
 	Config c;
 	c.parse_config("CONFIG.txt");
