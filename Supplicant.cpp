@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void Supplicant::init()
+void Supplicant::init(u_char* supadd)
 {
 
 	pcap_if_t *alldevs;
@@ -62,7 +62,8 @@ void Supplicant::init()
 		;
 
 	for (int i = 0; i < 6; ++i)
-		sourceMac[i] = (u_char)0x20;
+		//sourceMac[i] = (u_char)0x20;
+		sourceMac[i] = (u_char)supadd[i];
 	
 	connectionIdentifier = 0x0;		
 
@@ -497,13 +498,15 @@ void Supplicant::listenNext()
 
 				break;
 			case 0x04:
-				cout << "Fail: Client authentication FAILED: Received negative response from RADIUS. " << endl;
 				log += " fail";
-
 				log += "\n";
-				cout << "LOG: " << log ;
+				cout << "LOG: " << log;
 				logger << log;
-
+				cout << "!!" << endl;
+				cout << "Fail: Client authentication FAILED: Received negative response from RADIUS. " << endl;
+				
+				breaker = 0;
+				sessionActive = 0;
 				break;
 			default:
 				cout << "code: def" << endl;

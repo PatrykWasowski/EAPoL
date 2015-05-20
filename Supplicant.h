@@ -33,7 +33,7 @@ public:
 	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
-	void init();
+	void init(u_char*);
 	int eapolStart();
 	int eapolLogoff();
 	int eapResponseIdentify();

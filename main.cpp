@@ -31,7 +31,7 @@ int main()
 	//cout << "i = " << hex << (char)i << endl;
 
 
-	s.init();
+	s.init(c.supplicant_mac);
 	s.eapolStart();
 	//s.eapResponseIdentify();
 	//s.eapResponseChallenge();
