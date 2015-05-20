@@ -1,7 +1,7 @@
 #include "Application.h"
 
 
-Application::Application () {
+Application::Application (Controller& contrl) : controller (contrl) {
 }
 
 

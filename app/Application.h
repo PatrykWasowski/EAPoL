@@ -6,7 +6,7 @@
 #include "Controller.h"
 class Application {
 public:
-	Application ();
+	Application (Controller& contr);
 	~Application ();
 
 	void initialize ();
@@ -14,6 +14,6 @@ public:
 
 private:
 	sf::RenderWindow window;
-	Controller controller;
+	Controller& controller;
 };
 #endif 

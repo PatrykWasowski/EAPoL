@@ -97,7 +97,7 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 	switch (event) {
 
 		case Gui::CONNECT:
-			// launch thread
+			connect ();
 			break;
 		case Gui::DISCONNECT:
 			// order thread to stop
@@ -120,4 +120,15 @@ Console& Controller::getConsole () {
 
 void Controller::sendMessagge (const std::string& msg) {
 	console.addMessage (msg);
+}
+void Controller::setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c) {
+	mtx = m;
+	ready = r;
+	cv = c;
+}
+
+void Controller::connect () {
+	std::unique_lock<std::mutex> lck (*mtx);
+	(*ready) = true;
+	cv->notify_all ();
 }

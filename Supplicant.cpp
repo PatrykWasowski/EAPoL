@@ -2,9 +2,9 @@
 
 using namespace std;
 
-void Supplicant::init()
+void Supplicant::init(Controller* contr)
 {
-
+	controller = contr;
 	pcap_if_t *alldevs;
 	//pcap_if_t *d;
 	int inum;

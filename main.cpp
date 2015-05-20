@@ -3,42 +3,66 @@
 #include "Config.h"
 #include <pcap.h>
 #include "./app/Application.h"
+#include <thread>
+#include <mutex>
+#include <condition_variable>
 
 using namespace std;
 
-int main()
-{
-	Application app;
-	app.initialize ();
-	app.run ();
+std::mutex mtx;
+std::condition_variable cv;
+bool ready = false;
 
 
+void funkcjathreada (Controller* controller) {
 
 	Config c;
-	c.parse_config("CONFIG.txt");
-
+	c.parse_config ("CONFIG.txt");
 
 	cout << "Hello world" << endl;
 	pcap_if_t *d, *alldevs;
 
-	char errbuf[PCAP_ERRBUF_SIZE];
-	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
+	char errbuf [PCAP_ERRBUF_SIZE];
+	pcap_findalldevs_ex ("rpcap://", NULL, &alldevs, errbuf);
 	Supplicant s;
-	
+
 	int i = 19;
-	cout << "i = " << hex << (char)i << endl;
-	s.init();
-	s.eapolStart();
+	cout << "i = " << hex << (char) i << endl;
+	
+	std::unique_lock<std::mutex> lck (mtx);
+	while (!ready) cv.wait (lck);
+	controller->sendMessagge ("costam");
+	//s.init (controller);
+	//s.eapolStart ();
 	//s.eapResponseIdentify();
 	//s.eapResponseChallenge();
 	//s.eapolLogoff();
-	while (s.sessionActive)
-	s.listenNext();
+	/*while (s.sessionActive)
+		s.listenNext ();
+*/
 
-
-	cout << "closing connection" ;
+	cout << "closing connection";
 	//s.eapolLogoff();
-	cout << "done!"<<endl;
-	system("Pause");
+	cout << "done!" << endl;
+	system ("Pause");
+
+}
+
+
+
+
+int main()
+{
+	Controller controller;
+	controller.setCriticalSection (&mtx, &ready, &cv);
+	std::thread thr (funkcjathreada, &controller);
+	Application app(controller);
+	app.initialize ();
+	app.run ();
+
+	
+
+	thr.join ();
+	
 	return 0;
 }
