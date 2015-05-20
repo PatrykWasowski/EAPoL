@@ -49,7 +49,7 @@ int Config::parse_config(string path){
 			
 	}
 
-	cout << "zakonczono wczytywanie konfiguracji\n";
+	cout << "Loading config file - Done!\n";
 	cout << "\tconnection_mode: " << connection_mode<<endl;
 	cout << "\tserver_mac: ";
 	for (int i = 0; i < 6; i++){
