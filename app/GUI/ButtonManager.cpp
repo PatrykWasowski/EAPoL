@@ -15,8 +15,8 @@ void ButtonManager::associateWindow (sf::RenderWindow& wind) {
 }
 
 void ButtonManager::createButtons () {
-	buttonList.push_back (new Button ("Resources/button.png", sf::Vector2f (445.f, 30.f), Gui::GuiEvent::CONNECT));
-	buttonList.push_back (new Button ("Resources/closeConnection.png", sf::Vector2f (445.f, 100.f), Gui::GuiEvent::DISCONNECT));
+	buttonList.push_back (new Button ("Resources/button.png", sf::Vector2f (465.f, 30.f), Gui::GuiEvent::CONNECT));
+	buttonList.push_back (new Button ("Resources/closeConnection.png", sf::Vector2f (465.f, 100.f), Gui::GuiEvent::DISCONNECT));
 	//buttonList.push_back (new Button ("Resources/close.png", sf::vector2f (window->getSize()-30. , 10.f), Gui::GuiEvent::CLOSE));
 	//buttonList.push_back (new Button ("Resources/minimize.png", sf::vector2f (window->getSize()-60. , 10.f), Gui::GuiEvent::MINIMIZE));
 }

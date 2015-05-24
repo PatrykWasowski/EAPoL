@@ -80,7 +80,9 @@
     <ClCompile Include="app\Controller.cpp" />
     <ClCompile Include="app\GUI\Button.cpp" />
     <ClCompile Include="app\GUI\ButtonManager.cpp" />
+    <ClCompile Include="app\GUI\ChoicePanel.cpp" />
     <ClCompile Include="app\GUI\Console.cpp" />
+    <ClCompile Include="app\GUI\Option.cpp" />
     <ClCompile Include="app\GUI\TextField.cpp" />
     <ClCompile Include="app\GUI\TextFieldManager.cpp" />
     <ClCompile Include="Config.cpp" />
@@ -96,7 +98,9 @@
     <ClInclude Include="app\GuiEvent.h" />
     <ClInclude Include="app\GUI\Button.h" />
     <ClInclude Include="app\GUI\ButtonManager.h" />
+    <ClInclude Include="app\GUI\ChoicePanel.h" />
     <ClInclude Include="app\GUI\Console.h" />
+    <ClInclude Include="app\GUI\Option.h" />
     <ClInclude Include="app\GUI\TextField.h" />
     <ClInclude Include="app\GUI\TextFieldManager.h" />
     <ClInclude Include="Config.h" />

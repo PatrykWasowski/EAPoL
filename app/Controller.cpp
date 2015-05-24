@@ -1,7 +1,7 @@
 #include "Controller.h"
 
 
-Controller::Controller () : console (sf::Vector2f (35, 180), 20, 6) {
+Controller::Controller () : console (sf::Vector2f (35, 180), 20, 6), choicePanel(sf::Vector2f(210, 30), 8) {
 }
 
 
@@ -14,12 +14,14 @@ void Controller::initManagers (sf::RenderWindow& wind){
 	txtFldManager.associateWindow (wind);
 	txtFldManager.createFields ();
 	console.associateWindow (wind);
+	choicePanel.associateWindow (wind);
 }
 
 void Controller::draw () {
 	btnManager.draw ();
 	txtFldManager.draw ();
 	console.draw ();
+	choicePanel.draw ();
 }
 
 void Controller::manageEvents (const sf::Event& event) {
@@ -28,7 +30,7 @@ void Controller::manageEvents (const sf::Event& event) {
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (btnManager.checkButtonsClicked (event) != Gui::GuiEvent::MISSED) {
 				ev = btnManager.checkButtonsClicked (event);
-				console.addMessage (std::to_string (debug++));
+			//	console.addMessage (std::to_string (debug));
 				performAction (ev);
 			}
 			else if (txtFldManager.checkActivation (event) != Gui::GuiEvent::MISSED) {
@@ -38,15 +40,22 @@ void Controller::manageEvents (const sf::Event& event) {
 				ev = console.checkButtonsClicked (event);
 				console.reactOnButton (ev);
 			}
-			
+			else if (choicePanel.checkButtonsClicked (event) != Gui::GuiEvent::MISSED) {
+				ev=choicePanel.checkButtonsClicked (event);
+				choicePanel.reactOnButton (ev);
+			}
+			else if (choicePanel.checkOptionsClicked (event) != Gui::GuiEvent::MISSED) {
+				ev = choicePanel.checkOptionsClicked (event);
+			}
 		}
-		debugEvent ("click ", ev);
+	//	debugEvent ("click ", ev);
 
-	}
+	}// end mouse button pressed
+	
 	if (event.type == sf::Event::TextEntered) {
 		if (txtFldManager.checkIfAnyActive ())
 			ev = txtFldManager.manageTextInput (event);
-		debugEvent ("key ", ev);
+	//	debugEvent ("key ", ev);
 	}
 	if (event.type == sf::Event::Closed) {
 		performAction (Gui::GuiEvent::CLOSE);
@@ -98,15 +107,13 @@ void Controller::debugEvent (std::string from, Gui::GuiEvent event) {
 void Controller::performAction (const Gui::GuiEvent& event) {
 
 	switch (event) {
-
 		case Gui::CONNECT:
 			connect ();
 			break;
 		case Gui::DISCONNECT:
-			// order thread to stop
+			choicePanel.addOption (std::to_string (debug++));
 			break;
-		case Gui::CLOSE:
-			
+		case Gui::CLOSE:	
 			runMutex.lock ();
 			r = false;
 			runMutex.unlock ();
@@ -146,4 +153,11 @@ bool Controller::running () {
 
 std::vector<std::string> Controller::getData () {
 	return txtFldManager.getData ();
+}
+void Controller::addOption (const std::string& opt) {
+	choicePanel.addOption (opt);
+}
+
+std::string Controller::getOption () {
+	return choicePanel.getOption ();
 }
