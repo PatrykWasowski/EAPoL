@@ -19,23 +19,14 @@ int main()
 	Config c;
 	c.parse_config("CONFIG.txt");
 
-
-	
-	pcap_if_t *d, *alldevs;
+	pcap_if_t *alldevs;
 
 	char errbuf[PCAP_ERRBUF_SIZE];
 	pcap_findalldevs_ex("rpcap://", NULL, &alldevs, errbuf);
 	Supplicant s;
-	
-	//int i = 19;
-	//cout << "i = " << hex << (char)i << endl;
-
 
 	s.init(c.supplicant_mac);
 	s.eapolStart();
-	//s.eapResponseIdentify();
-	//s.eapResponseChallenge();
-	//s.eapolLogoff();
 	while (s.sessionActive)
 	s.listenNext();
 

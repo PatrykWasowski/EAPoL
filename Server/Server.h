@@ -146,7 +146,7 @@ int EAP_request_identify()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0; //eapol-packet
-	eth->packet_body_length = sizeof(EAP_HEADER) + 1; //1 bajt na type
+	eth->packet_body_length = htons(sizeof(EAP_HEADER) + 1); //1 bajt na type
 
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
@@ -183,7 +183,7 @@ int EAP_request_MD5()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;	//eap-packet
-	eth->packet_body_length = sizeof(EAP_HEADER) + 1 + strlen(CHALLENGE_STRING); // 1 - type
+	eth->packet_body_length = htons(sizeof(EAP_HEADER) + 2 + strlen(CHALLENGE_STRING)); // 1 - type, 1 bajt na dlugosc challenge_Stringa
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 1; //request
@@ -221,7 +221,7 @@ int EAP_succes(){
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0; //eapol-packet
-	eth->packet_body_length = sizeof(EAP_HEADER);
+	eth->packet_body_length = htons(sizeof(EAP_HEADER));
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 3;	//succes
@@ -249,7 +249,7 @@ int EAP_failure(){
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0; //eapol-packet
-	eth->packet_body_length = sizeof(EAP_HEADER);
+	eth->packet_body_length = htons(sizeof(EAP_HEADER));
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 4;	//failure
