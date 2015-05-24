@@ -153,9 +153,9 @@ int Supplicant::eapolLogoff()
 int Supplicant::eapResponseIdentify()
 {
 	string log("");
-	log += getDestinationMac();
-	log += " ";
 	log += getSourceMac();
+	log += " ";
+	log += getDestinationMac();
 	log += " ";
 	cout << "Sending packet:" << endl;
 
@@ -169,7 +169,7 @@ int Supplicant::eapResponseIdentify()
 	eth->type = htons(0x888E);
 	eth->protocol_version = 2;
 	eth->packet_type = 0;
-	eth->packet_body_length = htons(sizeof(EAP_HEADER) + login.length() +1);
+	eth->packet_body_length = htons(sizeof(EAP_HEADER) + login.length() + 1);
 
 	eap = (EAP_HEADER*)(packet_buffer + sizeof(ETHERNET_HEADER));
 	eap->code = 2;
@@ -201,9 +201,9 @@ int Supplicant::eapResponseChallenge()
 {
 
 	string log("");
-	log += getDestinationMac();
-	log += " ";
 	log += getSourceMac();
+	log += " "; 
+	log += getDestinationMac();
 	log += " ";
 	cout << "Sending packet:" << endl;
 
@@ -445,7 +445,6 @@ void Supplicant::listenNext()
 			break;
 		
 			default:
-			cout << "type: unknown  " << endl;
 			log += " unknown type";
 		}
 	}

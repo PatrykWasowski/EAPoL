@@ -34,7 +34,7 @@ private:
 	//bool bLineBegining tells if logger starts to log in new line of file
 	bool bLineBegining;
 	//header od logger, in the begining of every line
-	const std::string loggerHeader = " LOG: ";
+	const std::string loggerHeader = "LAST AUTHENTICATION LOG: ";
 	//This is the key: std::endl is a template function, and this is the signature of that function (For std::ostream).
 	using endl_type = std::ostream&(std::ostream&);
 
@@ -66,13 +66,11 @@ template<typename T>
 Logger& Logger::operator<< (const T& data) {
 	if (bLineBegining) {
 		bLineBegining = false;
-		clock_t clockEnd;
-		clockEnd = clock ();
-		long myTime = (long) (clockEnd - clockBegin);
-		(*outStream) << "[" << (myTime / 1000) << "." << (myTime % 1000) << "] " << '\t' << loggerHeader << '\t' << data; // TODO zmodyfikowac na potrzeby Supplicanta
+		
+		(*outStream) << loggerHeader << '\n' << data; // TODO zmodyfikowac na potrzeby Supplicanta
 	}
 	else
-		(*outStream) << " " << data;
+		(*outStream) << data;
 
 
 	return Logger::getInstance ();
