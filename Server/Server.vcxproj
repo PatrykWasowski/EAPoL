@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\md5.cpp" />
     <ClCompile Include="main_server.cpp" />
+    <ClCompile Include="Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\headers.h" />
