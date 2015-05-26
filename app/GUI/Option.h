@@ -26,7 +26,7 @@ private:
 	sf::Text text;
 	sf::RectangleShape background;
 	bool active = false;
-	std::string parseText ();
+	std::string parseText (std::string);
 
 
 };

@@ -26,13 +26,16 @@ private:
 	int packetCounter;
 	Logger& logger;
 	u_char lastIdentifier;
+	pcap_if_t *alldevs;
+	Controller* controller;
 
+	void chooseDevice (const int& inum);
 public:
 	bool sessionActive;
 	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
-	void init(u_char*);
+	void init(u_char*, Controller*);
 	int eapolStart();
 	int eapolLogoff();
 	int eapResponseIdentify();

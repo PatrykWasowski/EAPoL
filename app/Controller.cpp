@@ -158,6 +158,11 @@ void Controller::addOption (const std::string& opt) {
 	choicePanel.addOption (opt);
 }
 
-std::string Controller::getOption () {
+int Controller::getOption () {
 	return choicePanel.getOption ();
+}
+
+void Controller::clearOptions () {
+	choicePanel.clear();
+
 }

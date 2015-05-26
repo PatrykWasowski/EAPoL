@@ -77,6 +77,8 @@ Gui::GuiEvent ChoicePanel::checkOptionsClicked (const sf::Event& event) {
 	Gui::GuiEvent ev = Gui::GuiEvent::MISSED;
 	(opts < (int) textPositions.size ()) ? temp = opts : temp = textPositions.size ();
 	for (int i = firstToDisplay; i <= firstToDisplay + temp; ++i) {
+		// TU JEST JAKIS PROBLEM!
+		
 		if ((options [i]->checkClicked (position) != Gui::GuiEvent::MISSED) && (activeOption != options[i])) {
 			ev = options [i]->checkClicked (position);
 			activeOption->resetActive ();
@@ -95,7 +97,7 @@ void ChoicePanel::draw () {
 
 	if (options.size ()>0){
 		int temp;
-		(opts < textPositions.size ()) ? temp = opts : temp = textPositions.size ()-1;
+		(opts < textPositions.size ()) ? temp = opts : temp = (int)textPositions.size ()-1;
 		for (int i = firstToDisplay; i <= firstToDisplay + temp; ++i) {
 			options [i]->draw (window);
 		}
@@ -115,7 +117,7 @@ void ChoicePanel::reactOnButton (const Gui::GuiEvent& event) {
 	}
 	else {
 		mutex.lock ();
-		if ((firstToDisplay == (options.size() - textPositions.size())) || (opts < (int)textPositions.size ())) {
+		if ((firstToDisplay == ((int)options.size () - (int) textPositions.size ())) || (opts < (int) textPositions.size ())) {
 			mutex.unlock ();
 			return;
 		}
@@ -125,8 +127,15 @@ void ChoicePanel::reactOnButton (const Gui::GuiEvent& event) {
 	}
 }
 
-std::string ChoicePanel::getOption () {
-	return activeOption->getText ();
+int ChoicePanel::getOption () {
+	
+	for (int i = 0; i < options.size(); i++) {
+		if (activeOption == options [i])
+			return i+1;
+	}
+
+	return 0;
+
 }
 
 void ChoicePanel::assignMessagesToDisplay () {
@@ -137,3 +146,9 @@ void ChoicePanel::assignMessagesToDisplay () {
 	mutex.unlock ();
 }
 
+void ChoicePanel::clear () {
+
+	options.clear ();
+	firstToDisplay = 0;
+	opts = -1;
+}

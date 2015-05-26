@@ -20,11 +20,15 @@ public:
 	void sendMessagge (const std::string& msg);
 	void setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c);
 	void addOption (const std::string& opt);
-	std::string getOption ();
+	int getOption ();
 	std::vector<std::string> getData ();
+
+
 
 	bool running ();
 	bool connection ();
+
+	void clearOptions ();
 
 
 

@@ -58,8 +58,8 @@ void Option::setPostion (const sf::Vector2f& position) {
 
 void Option::setText (const std::string& txt) {
 	data = txt;
-	// text.setString (parseText (data));
-	text.setString (data);
+	text.setString (parseText (data));
+	//text.setString (data);
 }
 
 std::string Option::getText () {
@@ -70,7 +70,6 @@ void Option::resetActive () {
 	active = false;
 }
 
-std::string parseText () {
-	//TODO
-	return"";
+std::string Option::parseText (std::string temp) {
+	return temp.substr (16, temp.length ());
 }

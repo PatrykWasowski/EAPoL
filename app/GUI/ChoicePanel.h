@@ -21,7 +21,7 @@ public:
 	Gui::GuiEvent checkButtonsClicked (const sf::Event& event);
 	Gui::GuiEvent checkOptionsClicked (const sf::Event& event);
 	void reactOnButton (const Gui::GuiEvent& event);
-	std::string getOption ();
+	int getOption ();
 
 
 	void draw ();

@@ -1,11 +1,10 @@
-#include "Supplicant.h"
+﻿#include "Supplicant.h"
 
 using namespace std;
 
-void Supplicant::init(u_char* supadd)
+void Supplicant::init(u_char* supadd, Controller* ctr)
 {
-
-	pcap_if_t *alldevs;
+	controller = ctr;
 	int inum;
 	int i = 0;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -18,8 +17,11 @@ void Supplicant::init(u_char* supadd)
 		exit(1);
 	}
 
+	controller->clearOptions ();
+
 	for (d = alldevs; d; d = d->next)
 	{
+		controller->addOption (d->description);
 		printf("%d. %s", ++i, d->name);
 		if (d->description)
 			printf(" (%s)\n", d->description);
@@ -34,18 +36,20 @@ void Supplicant::init(u_char* supadd)
 	}
 
 	printf("Enter the interface number (1-%d):", i);
-	scanf_s("%d", &inum);
 
-	if (inum < 1 || inum > i)
-	{
-		printf("\nInterface number out of range.\n");
-		pcap_freealldevs(alldevs);
-		return;
-	}
-
-	for (d = alldevs, i = 0; i < inum - 1; d = d->next, i++);
+	for (int i = 0; i < 6; ++i)
+		sourceMac[i] = (u_char)supadd[i];
 	
-	if ((fp = pcap_open(d->name,    // name of the device
+	sessionActive = 1;
+	packetCounter = 0;
+	lastIdentifier = (u_char)0x40;
+}
+
+void Supplicant::chooseDevice (const int& inum) {
+	int i;
+	for (d = alldevs,  i = 0; i < inum - 1; d = d->next, i++);
+
+	if ((fp = pcap_open (d->name,    // name of the device
 		100,						// portion of the packet to capture (only the first 100 bytes)
 		PCAP_OPENFLAG_PROMISCUOUS,  // promiscuous mode
 		1000,						// read timeout
@@ -53,19 +57,8 @@ void Supplicant::init(u_char* supadd)
 		errbuf						// error buffer
 		)) == NULL)
 		return;
-
-	for (int i = 0; i < 6; ++i)
-		sourceMac[i] = (u_char)supadd[i];
-	
-	connectionIdentifier = 0x0;		
-
-	setChallenge("CHALLENGE");
-	setLogin("Maciek");
-	setPassword("PASSWORD");
-	sessionActive = 1;
-	packetCounter = 0;
-	lastIdentifier = (u_char)0x40;
 }
+
 
 void Supplicant::setChallenge(string cha)
 {
@@ -84,6 +77,18 @@ void Supplicant::setPassword(string pas)
 
 int Supplicant::eapolStart()
 {
+
+	std::vector<string> vct;
+	vct = controller->getData ();
+
+	setPassword (vct [1]);
+	setLogin (vct [0]);
+
+
+	chooseDevice (controller->getOption ());
+
+
+
 	string log("");
 	log += getDestinationMac();
 	log += " ";
@@ -413,6 +418,7 @@ void Supplicant::listenNext()
 						cout << "Success: Client authentication accepted. Access to network granted. " << endl;
 						log += " success";
 						cout << ".\n.\n." << endl;
+						// TU MA SIE ZABLOKOWAC NA MUTEXIE I ODBLOKOWAĆ PO DISCONECT
 
 						 sessionActive = 0;
 						 breaker = 0;
