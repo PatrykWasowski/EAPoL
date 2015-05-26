@@ -61,7 +61,9 @@ int Config::parse_config(string path){
 		printf("%.2X", supplicant_mac[i]);
 		if (i < 5) printf(":");
 	}
-	cout << endl<<endl;
+	cout << endl << endl;
+
+	return 0;
 }
 
 vector<string>& Config::split(const string &s, char delim, vector<string> &elems) {

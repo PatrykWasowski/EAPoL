@@ -1,4 +1,6 @@
+# to tez jest komentarz
 connection_mode = 1
 server_mac = 2:2:2:2:2:2
 #to jest komentarz
 supplicant_mac = 1:1:1:1:1:1
+
