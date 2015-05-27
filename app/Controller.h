@@ -6,6 +6,9 @@
 #include "GUI\Console.h"
 #include "GUI\ChoicePanel.h"
 #include "../CriticalSectionPack.h"
+#include <SFML/Window.hpp>
+#include <Windows.h>
+
 
 
 class Controller {

@@ -30,6 +30,7 @@ void Controller::manageEvents (const sf::Event& event) {
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (btnManager.checkButtonsClicked (event) != Gui::GuiEvent::MISSED) {
 				ev = btnManager.checkButtonsClicked (event);
+				debugEvent ("click", ev);
 				performAction (ev);
 			}
 			else if (txtFldManager.checkActivation (event) != Gui::GuiEvent::MISSED) {

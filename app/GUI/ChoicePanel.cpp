@@ -77,7 +77,7 @@ Gui::GuiEvent ChoicePanel::checkOptionsClicked (const sf::Event& event) {
 	int temp;
 	Gui::GuiEvent ev = Gui::GuiEvent::MISSED;
 	
-	(opts < (int)textPositions.size ()) ? temp = opts : temp = textPositions.size ();
+	(opts < (int)textPositions.size ()) ? temp = opts+1 : temp = textPositions.size ();
 	for (int i = firstToDisplay; i < firstToDisplay + temp; ++i) {
 			if ((options [i]->checkClicked (position) != Gui::GuiEvent::MISSED) && (activeOption != options[i])) {
 			ev = options [i]->checkClicked (position);

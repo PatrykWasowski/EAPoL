@@ -12,7 +12,8 @@ Application::~Application () {
 void Application::initialize () {
 	//window initialization
 
-	window.create (sf::VideoMode (800, 510), "EAPoL Client");
+	sf::ContextSettings settings;
+	window.create (sf::VideoMode (800, 400), "EAPoL Client", sf::Style::Close|sf::Style::Titlebar, settings);
 	window.setVerticalSyncEnabled (true);
 	window.setPosition (sf::Vector2i (0, 0));
 	window.setKeyRepeatEnabled (false);
@@ -26,8 +27,7 @@ void Application::run () {
 	while (window.isOpen ()) {
 		sf::Event event;
 		while (window.pollEvent (event)) {
-			if (event.type == sf::Event::Closed)
-			controller->manageEvents (event);
+		controller->manageEvents (event);
 		}
 		window.clear (sf::Color(60,60,60,255));
 		controller->draw ();
