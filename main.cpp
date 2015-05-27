@@ -4,50 +4,52 @@
 #include <pcap.h>
 #include "./app/Application.h"
 #include <thread>
-#include <mutex>
-#include <condition_variable>
-
+#include "CriticalSectionPack.h"
 using namespace std;
 
-std::mutex mtx;
-std::condition_variable cv;
-bool ready = false;
+
+CriticalSectionPack connectPack;
+CriticalSectionPack disconnectPack;
+//std::mutex mtx;
+//std::condition_variable cv;
+//bool ready = false;
 
 
 void funkcjathreada (Controller* controller) {
+	Config c;
+	c.parse_config ("CONFIG.txt");
+
+	pcap_if_t *d, *alldevs;
+
+	char errbuf [PCAP_ERRBUF_SIZE];
+	pcap_findalldevs_ex ("rpcap://", NULL, &alldevs, errbuf);
+	Supplicant s;
+
+	int i = 19;
+	std::cout << "i = " << hex << (char) i << endl;
+
 	while (controller->running ()) {
-		Config c;
-		c.parse_config ("CONFIG.txt");
-
-		pcap_if_t *d, *alldevs;
-
-		char errbuf [PCAP_ERRBUF_SIZE];
-		pcap_findalldevs_ex ("rpcap://", NULL, &alldevs, errbuf);
-		Supplicant s;
-
-		int i = 19;
-		std::cout << "i = " << hex << (char) i << endl;
-		s.init (c.supplicant_mac, controller);
+		s.init (c.supplicant_mac, controller, &disconnectPack);
 		
-		std::unique_lock<std::mutex> lck (mtx);
-		while (!ready) cv.wait (lck);
-		ready = false;
-
-		cout << "dupskooo" << endl;
+		controller->setButtonLocked (0, false);
+		std::unique_lock<std::mutex> lck (connectPack.mtx);
+		while (!connectPack.ready) connectPack.cv.wait (lck);
+		if (!controller->running ())
+			return;
+		controller->setButtonLocked (1, false);
+		controller->setButtonLocked (0, true);
+		connectPack.ready = false;
 		s.eapolStart ();
-
-		controller->sendMessagge ("costam");
-
-		//s.eapResponseIdentify();
-		//s.eapResponseChallenge();
-		//s.eapolLogoff();
-
+	
 		while (s.sessionActive)
 			s.listenNext ();
 
-
 		cout << "closing connection";
 		s.eapolLogoff ();
+		
+		
+		//place to unlock connect button 
+
 		cout << "done!" << endl;
 	}
 }
@@ -57,7 +59,7 @@ void funkcjathreada (Controller* controller) {
 
 int main () {
 	Controller controller;
-	controller.setCriticalSection (&mtx, &ready, &cv);
+	controller.setCriticalSection (&connectPack, &disconnectPack);
 	std::thread thr (funkcjathreada, &controller);
 	Application app (&controller);
 	app.initialize ();

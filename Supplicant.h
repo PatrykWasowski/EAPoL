@@ -28,14 +28,15 @@ private:
 	u_char lastIdentifier;
 	pcap_if_t *alldevs;
 	Controller* controller;
-
+	CriticalSectionPack* connectPack;
 	void chooseDevice (const int& inum);
+	void lockCase ();
 public:
 	bool sessionActive;
 	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
-	void init(u_char*, Controller*);
+	void init(u_char*, Controller*, CriticalSectionPack*);
 	int eapolStart();
 	int eapolLogoff();
 	int eapResponseIdentify();

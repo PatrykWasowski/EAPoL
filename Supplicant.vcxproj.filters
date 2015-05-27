@@ -122,5 +122,8 @@
     <ClInclude Include="app\GUI\Option.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CriticalSectionPack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

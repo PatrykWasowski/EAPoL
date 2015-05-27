@@ -2,9 +2,10 @@
 
 using namespace std;
 
-void Supplicant::init(u_char* supadd, Controller* ctr)
+void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 {
 	controller = ctr;
+	connectPack = csp;
 	int inum;
 	int i = 0;
 	char errbuf[PCAP_ERRBUF_SIZE];
@@ -327,6 +328,12 @@ void Supplicant::listenNext()
 
 	while (breaker)
 	{
+		if (!controller->getConnecting ()) {
+			breaker = 0;
+			sessionActive = 0;
+			controller->setButtonLocked (1, true);
+			break;
+		}
 		int res;
 		res = pcap_next_ex(fp, &header, &pkt_data);
 		u_char temp[100];
@@ -418,10 +425,11 @@ void Supplicant::listenNext()
 						cout << "Success: Client authentication accepted. Access to network granted. " << endl;
 						log += " success";
 						cout << ".\n.\n." << endl;
-						// TU MA SIE ZABLOKOWAC NA MUTEXIE I ODBLOKOWAĆ PO DISCONECT
-
-						 sessionActive = 0;
-						 breaker = 0;
+						sessionActive = 0;
+						breaker = 0;
+						controller->setConnection (true);
+						lockCase ();
+						controller->setButtonLocked (1, true);
 					break;
 
 					case 0x04:
@@ -493,3 +501,8 @@ string Supplicant::getSourceMac()
 }
 
 
+void Supplicant::lockCase () {
+	std::unique_lock<std::mutex> lck (connectPack->mtx);
+	while (!connectPack->ready) connectPack->cv.wait (lck);
+	connectPack->ready = false;
+}

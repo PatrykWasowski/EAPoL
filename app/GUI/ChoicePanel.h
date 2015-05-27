@@ -40,7 +40,7 @@ private:
 	// data
 	std::vector<Option*> options;
 	Option* activeOption = nullptr;
-	std::vector<sf::Vector2f> textPositions;
+	std::vector<sf::Vector2f*> textPositions;
 
 	int firstToDisplay;
 	int opts;

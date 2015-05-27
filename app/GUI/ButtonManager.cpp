@@ -15,10 +15,10 @@ void ButtonManager::associateWindow (sf::RenderWindow& wind) {
 }
 
 void ButtonManager::createButtons () {
-	buttonList.push_back (new Button ("Resources/button.png", sf::Vector2f (465.f, 30.f), Gui::GuiEvent::CONNECT));
-	buttonList.push_back (new Button ("Resources/closeConnection.png", sf::Vector2f (465.f, 100.f), Gui::GuiEvent::DISCONNECT));
-	//buttonList.push_back (new Button ("Resources/close.png", sf::vector2f (window->getSize()-30. , 10.f), Gui::GuiEvent::CLOSE));
-	//buttonList.push_back (new Button ("Resources/minimize.png", sf::vector2f (window->getSize()-60. , 10.f), Gui::GuiEvent::MINIMIZE));
+	buttonList.push_back (new Button ("Resources/button.png", sf::Vector2f (715.f, 30.f), Gui::GuiEvent::CONNECT, false));
+	buttonList.push_back (new Button ("Resources/closeConnection.png", sf::Vector2f (715.f, 100.f), Gui::GuiEvent::DISCONNECT, true));
+	buttonList.push_back (new Button ("Resources/close.png", sf::Vector2f (window->getSize().x-20. ,5.f), Gui::GuiEvent::CLOSE));
+	buttonList.push_back (new Button ("Resources/minimize.png", sf::Vector2f (window->getSize().x-40. , 5.f), Gui::GuiEvent::MINIMIZE));
 }
 
 void ButtonManager::draw () {
@@ -36,6 +36,12 @@ Gui::GuiEvent ButtonManager::checkButtonsClicked (sf::Event event) {
 			break;
 		}
 	}
-	
 	return ev;
+}
+
+void ButtonManager::changeBtnActivity (const int& position, const bool& activity) {
+	if (position > buttonList.size ())
+		return;
+	buttonList [position]->setLocked (activity);
+
 }

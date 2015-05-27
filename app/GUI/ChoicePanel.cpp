@@ -9,20 +9,21 @@ ChoicePanel::~ChoicePanel () {
 }
 
 ChoicePanel::ChoicePanel (const sf::Vector2f& position, const int& msgToDisplay) :
-up ("./Resources/up.png", sf::Vector2f (position.x + 215, position.y), Gui::GuiEvent::SCROLL_UP),
-down ("./Resources/down.png", sf::Vector2f (position.x + 215, position.y + msgToDisplay * 16 - 30), Gui::GuiEvent::SCROLL_DOWN),
+up ("./Resources/up.png", sf::Vector2f (position.x + 465, position.y), Gui::GuiEvent::SCROLL_UP),
+down ("./Resources/down.png", sf::Vector2f (position.x + 465, position.y + msgToDisplay * 16 - 30), Gui::GuiEvent::SCROLL_DOWN),
 firstToDisplay (0),
 opts (-1)
 {
 	font.loadFromFile ("./Resources/angleterre-book/angltrr.ttf");
 
 	for (int i = 0; i < msgToDisplay; ++i) {
-		textPositions.push_back (sf::Vector2f (position.x, position.y + i * 16));
+		textPositions.push_back (new sf::Vector2f (position.x, position.y + i * 16));
 	}
+	int a = textPositions.size ();
 
 	background.setFillColor (sf::Color (45, 45, 45, 255));
 	background.setPosition (position);
-	background.setSize (sf::Vector2f (210.f, (float) msgToDisplay * 16));
+	background.setSize (sf::Vector2f (460.f, (float) msgToDisplay * 16));
 }
 
 
@@ -33,9 +34,9 @@ void ChoicePanel::associateWindow (sf::RenderWindow& wind) {
 void ChoicePanel::addOption (const std::string& msg) {
 	mutex.lock ();
 	++opts;
-	if (opts < (int)textPositions.size ()) {
+	if (opts < (int)textPositions.size()) {
 		options.push_back (new Option (font));
-		options [opts]->setPostion (textPositions [opts]);
+		options [opts]->setPostion (*textPositions [opts]);
 		options [opts]->setText (msg);
 	
 		//if first option
@@ -75,11 +76,10 @@ Gui::GuiEvent ChoicePanel::checkOptionsClicked (const sf::Event& event) {
 		return Gui::GuiEvent::MISSED;
 	int temp;
 	Gui::GuiEvent ev = Gui::GuiEvent::MISSED;
-	(opts < (int) textPositions.size ()) ? temp = opts : temp = textPositions.size ();
-	for (int i = firstToDisplay; i <= firstToDisplay + temp; ++i) {
-		// TU JEST JAKIS PROBLEM!
-		
-		if ((options [i]->checkClicked (position) != Gui::GuiEvent::MISSED) && (activeOption != options[i])) {
+	
+	(opts < (int)textPositions.size ()) ? temp = opts : temp = textPositions.size ();
+	for (int i = firstToDisplay; i < firstToDisplay + temp; ++i) {
+			if ((options [i]->checkClicked (position) != Gui::GuiEvent::MISSED) && (activeOption != options[i])) {
 			ev = options [i]->checkClicked (position);
 			activeOption->resetActive ();
 			activeOption = options [i];
@@ -97,7 +97,7 @@ void ChoicePanel::draw () {
 
 	if (options.size ()>0){
 		int temp;
-		(opts < textPositions.size ()) ? temp = opts : temp = (int)textPositions.size ()-1;
+		(opts < (int)textPositions.size ()) ? temp = opts : temp = (int)textPositions.size ()-1;
 		for (int i = firstToDisplay; i <= firstToDisplay + temp; ++i) {
 			options [i]->draw (window);
 		}
@@ -129,7 +129,7 @@ void ChoicePanel::reactOnButton (const Gui::GuiEvent& event) {
 
 int ChoicePanel::getOption () {
 	
-	for (int i = 0; i < options.size(); i++) {
+	for (int i = 0; i < (int)options.size(); i++) {
 		if (activeOption == options [i])
 			return i+1;
 	}
@@ -140,14 +140,13 @@ int ChoicePanel::getOption () {
 
 void ChoicePanel::assignMessagesToDisplay () {
 	mutex.lock ();
-	for (int i = 0; i < textPositions.size(); ++i) {
-		options [firstToDisplay+i]->setPostion (textPositions[i]);
+	for (int i = 0; i < (int)textPositions.size(); ++i) {
+		options [firstToDisplay+i]->setPostion (*textPositions[i]);
 	}
 	mutex.unlock ();
 }
 
 void ChoicePanel::clear () {
-
 	options.clear ();
 	firstToDisplay = 0;
 	opts = -1;

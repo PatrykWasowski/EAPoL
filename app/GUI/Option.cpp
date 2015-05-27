@@ -6,7 +6,7 @@ Option::Option (const sf::Font& font) {
 	text.setFont (font);
 	text.setCharacterSize (12);
 	text.setString ("");
-	background.setSize (sf::Vector2f (200, 16));
+	background.setSize (sf::Vector2f (460, 16));
 	background.setFillColor (sf::Color (30, 30, 30, 255));
 }
 
@@ -71,5 +71,7 @@ void Option::resetActive () {
 }
 
 std::string Option::parseText (std::string temp) {
+	if (temp.size () > 16)
 	return temp.substr (16, temp.length ());
+	return temp;
 }

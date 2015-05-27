@@ -1,14 +1,14 @@
 #include "Controller.h"
 
 
-Controller::Controller () : console (sf::Vector2f (35, 180), 20, 6), choicePanel(sf::Vector2f(210, 30), 8) {
+Controller::Controller () : console (sf::Vector2f (35, 180), 60, 12), choicePanel(sf::Vector2f(210, 30), 8) {
 }
-
 
 Controller::~Controller () {
 }
 
 void Controller::initManagers (sf::RenderWindow& wind){
+	window = &wind;
 	btnManager.associateWindow (wind);
 	btnManager.createButtons ();
 	txtFldManager.associateWindow (wind);
@@ -30,7 +30,6 @@ void Controller::manageEvents (const sf::Event& event) {
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (btnManager.checkButtonsClicked (event) != Gui::GuiEvent::MISSED) {
 				ev = btnManager.checkButtonsClicked (event);
-			//	console.addMessage (std::to_string (debug));
 				performAction (ev);
 			}
 			else if (txtFldManager.checkActivation (event) != Gui::GuiEvent::MISSED) {
@@ -88,7 +87,6 @@ void Controller::debugEvent (std::string from, Gui::GuiEvent event) {
 			std::cout << "CLOSE" << std::endl;
 			break;
 		case Gui::MINIMIZE:
-
 			std::cout << "MINIMIZE" << std::endl;
 			break;
 		case Gui::SCROLL_DOWN:
@@ -96,7 +94,6 @@ void Controller::debugEvent (std::string from, Gui::GuiEvent event) {
 			std::cout << "SCROLL DOWN" << std::endl;
 			break;
 		case Gui::SCROLL_UP:
-
 			std::cout << "SCROLL_UP" << std::endl;
 			break;
 		default:
@@ -109,15 +106,25 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 	switch (event) {
 		case Gui::CONNECT:
 			connect ();
+			connecting = true;
 			break;
 		case Gui::DISCONNECT:
 			choicePanel.addOption (std::to_string (debug++));
+			if (c)
+				disconnect ();
+			c = false;
+			connecting = false;
 			break;
 		case Gui::CLOSE:	
 			runMutex.lock ();
 			r = false;
 			runMutex.unlock ();
+			//if not connected yet - signal for 2nd thread to wake up
 			connect ();
+			//if connected
+			disconnect ();
+			std::cout <<"ok";
+			window->close ();
 			break;
 		case Gui::MINIMIZE:
 			// minimize app
@@ -135,17 +142,23 @@ Console& Controller::getConsole () {
 void Controller::sendMessagge (const std::string& msg) {
 	console.addMessage (msg);
 }
-void Controller::setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c) {
-	mtx = m;
-	ready = r;
-	cv = c;
+void Controller::setCriticalSection (CriticalSectionPack* pck, CriticalSectionPack* pck2) {
+	connectPack = pck;
+	disconnectPack = pck2;
 }
 
 void Controller::connect () {
-	std::unique_lock<std::mutex> lck (*mtx);
-	(*ready) = true;
-	cv->notify_all ();
+	std::unique_lock<std::mutex> lck (connectPack->mtx);
+	(connectPack->ready) = true;
+	connectPack->cv.notify_all ();
 }
+
+void Controller::disconnect () {
+	std::unique_lock<std::mutex> lck (disconnectPack->mtx);
+	(disconnectPack->ready) = true;
+	disconnectPack->cv.notify_all ();
+}
+
 
 bool Controller::running () {
 	return r;
@@ -155,7 +168,9 @@ std::vector<std::string> Controller::getData () {
 	return txtFldManager.getData ();
 }
 void Controller::addOption (const std::string& opt) {
+	mtx.lock ();
 	choicePanel.addOption (opt);
+	mtx.unlock ();
 }
 
 int Controller::getOption () {
@@ -163,6 +178,39 @@ int Controller::getOption () {
 }
 
 void Controller::clearOptions () {
+	mtx.lock ();
 	choicePanel.clear();
+	mtx.unlock ();
+}
 
+void Controller::setButtonLocked (const int& id, const bool& lock) {
+	mtx.lock ();
+	btnManager.changeBtnActivity (id, lock);
+	mtx.unlock ();
+}
+
+bool Controller::getConnection () {
+	mtx.lock ();
+	bool a = c;
+	mtx.unlock ();
+	return a;
+}
+
+void Controller::setConnection (bool con) {
+	mtx.lock ();
+	c = con;
+	mtx.unlock ();
+}
+
+bool Controller::getConnecting () {
+	mtx.lock ();
+	bool a = connecting;
+	mtx.unlock ();
+	return connecting;
+}
+
+void Controller::setConnecting (bool con) {
+	mtx.lock ();
+	connecting = con;
+	mtx.unlock ();
 }

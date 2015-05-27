@@ -9,8 +9,8 @@ Console::~Console () {
 }
 
 Console::Console (const sf::Vector2f& position, const int& messageBuffer, const int& msgToDisplay):
-	up ("./Resources/up.png", sf::Vector2f (position.x + 440, position.y + 5), Gui::GuiEvent::SCROLL_UP),
-	down ("./Resources/down.png", sf::Vector2f (position.x + 440, position.y + msgToDisplay * 16 - 25), Gui::GuiEvent::SCROLL_DOWN),
+	up ("./Resources/up.png", sf::Vector2f (position.x + 690, position.y + 5), Gui::GuiEvent::SCROLL_UP),
+	down ("./Resources/down.png", sf::Vector2f (position.x + 690, position.y + msgToDisplay * 16 - 25), Gui::GuiEvent::SCROLL_DOWN),
 	firstToDisplay (0),
 	messageCounter (0)
 {
@@ -32,7 +32,7 @@ Console::Console (const sf::Vector2f& position, const int& messageBuffer, const 
 	}
 	background.setFillColor (sf::Color (30, 30, 30, 255));
 	background.setPosition (position);
-	background.setSize (sf::Vector2f (430.f, (float)10 + msgToDisplay * 16));
+	background.setSize (sf::Vector2f (680.f, (float)10 + msgToDisplay * 16));
 }
 
 
@@ -110,7 +110,6 @@ void Console::reactOnButton (const Gui::GuiEvent& event) {
 
 		}
 			++firstToDisplay;
-		std::cout << firstToDisplay << std::endl;
 		mutex.unlock ();
 		assignMessagesToDisplay ();
 	}

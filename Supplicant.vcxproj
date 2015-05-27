@@ -105,6 +105,7 @@
     <ClInclude Include="app\GUI\TextFieldManager.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="crc32.h" />
+    <ClInclude Include="CriticalSectionPack.h" />
     <ClInclude Include="headers.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="md5.h" />

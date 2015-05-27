@@ -5,8 +5,7 @@
 #include "GUI\TextFieldManager.h"
 #include "GUI\Console.h"
 #include "GUI\ChoicePanel.h"
-#include <mutex>
-#include <condition_variable>
+#include "../CriticalSectionPack.h"
 
 
 class Controller {
@@ -18,21 +17,25 @@ public:
 	void manageEvents (const sf::Event& event);
 	Console& getConsole ();
 	void sendMessagge (const std::string& msg);
-	void setCriticalSection (std::mutex*m, bool* r, std::condition_variable* c);
+	void setCriticalSection (CriticalSectionPack*, CriticalSectionPack*);
 	void addOption (const std::string& opt);
 	int getOption ();
 	std::vector<std::string> getData ();
 
-
+	void setButtonLocked (const int& id, const bool& lock);
 
 	bool running ();
-	bool connection ();
-
+	bool getConnection ();
+	bool getConnecting ();
 	void clearOptions ();
 
 
+	void setConnection (bool);
+	void setConnecting (bool);
+
 
 private:
+	sf::RenderWindow* window;
 	ButtonManager btnManager;
 	TextFieldManager txtFldManager;
 	Console console;
@@ -41,14 +44,20 @@ private:
 	void performAction (const Gui::GuiEvent& event);
 	int debug = 0;
 	
-	std::mutex runMutex;
-	std::mutex* mtx;
-	std::condition_variable* cv;
+	
 
+	std::mutex runMutex;
+	
+	CriticalSectionPack* connectPack;
+
+	CriticalSectionPack* disconnectPack;
+	std::mutex mtx;
 	bool* ready;
 	bool r = true;
 	bool c = false;
+	bool connecting = false;
 	void connect ();
+	void disconnect ();
 
 };
 

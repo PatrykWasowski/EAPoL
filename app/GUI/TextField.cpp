@@ -104,7 +104,6 @@ void TextField::addCharToText (char& c){
 				break;
 			case TextType::PASSWORD:
 				str += c;
-				std::cout << str << std::endl;
 				if (str.length() <= 18)
 					text.setString (text.getString () + "*");
 				break;
