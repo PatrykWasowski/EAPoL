@@ -30,7 +30,6 @@ void Controller::manageEvents (const sf::Event& event) {
 		if (event.mouseButton.button == sf::Mouse::Left) {
 			if (btnManager.checkButtonsClicked (event) != Gui::GuiEvent::MISSED) {
 				ev = btnManager.checkButtonsClicked (event);
-				debugEvent ("click", ev);
 				performAction (ev);
 			}
 			else if (txtFldManager.checkActivation (event) != Gui::GuiEvent::MISSED) {
@@ -48,14 +47,12 @@ void Controller::manageEvents (const sf::Event& event) {
 				ev = choicePanel.checkOptionsClicked (event);
 			}
 		}
-	//	debugEvent ("click ", ev);
 
 	}// end mouse button pressed
 	
 	if (event.type == sf::Event::TextEntered) {
 		if (txtFldManager.checkIfAnyActive ())
 			ev = txtFldManager.manageTextInput (event);
-	//	debugEvent ("key ", ev);
 	}
 	if (event.type == sf::Event::Closed) {
 		performAction (Gui::GuiEvent::CLOSE);
@@ -110,7 +107,6 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 			connecting = true;
 			break;
 		case Gui::DISCONNECT:
-			choicePanel.addOption (std::to_string (debug++));
 			if (c)
 				disconnect ();
 			c = false;
@@ -168,6 +164,7 @@ bool Controller::running () {
 std::vector<std::string> Controller::getData () {
 	return txtFldManager.getData ();
 }
+
 void Controller::addOption (const std::string& opt) {
 	mtx.lock ();
 	choicePanel.addOption (opt);

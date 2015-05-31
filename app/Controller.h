@@ -45,9 +45,6 @@ private:
 	ChoicePanel choicePanel;
 	void debugEvent (std::string from, Gui::GuiEvent event);
 	void performAction (const Gui::GuiEvent& event);
-	int debug = 0;
-	
-	
 
 	std::mutex runMutex;
 	
@@ -61,7 +58,6 @@ private:
 	bool connecting = false;
 	void connect ();
 	void disconnect ();
-
 };
 
 #endif

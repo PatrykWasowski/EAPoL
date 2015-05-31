@@ -40,7 +40,7 @@ Gui::GuiEvent ButtonManager::checkButtonsClicked (sf::Event event) {
 }
 
 void ButtonManager::changeBtnActivity (const int& position, const bool& activity) {
-	if (position > buttonList.size ())
+	if (position > (int)buttonList.size ())
 		return;
 	buttonList [position]->setLocked (activity);
 

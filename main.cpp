@@ -10,16 +10,12 @@ using namespace std;
 
 CriticalSectionPack connectPack;
 CriticalSectionPack disconnectPack;
-//std::mutex mtx;
-//std::condition_variable cv;
-//bool ready = false;
-
 
 void funkcjathreada (Controller* controller) {
 	Config c;
 	c.parse_config ("CONFIG.txt");
 
-	pcap_if_t *d, *alldevs;
+	pcap_if_t *alldevs;
 
 	char errbuf [PCAP_ERRBUF_SIZE];
 	pcap_findalldevs_ex ("rpcap://", NULL, &alldevs, errbuf);
@@ -43,18 +39,13 @@ void funkcjathreada (Controller* controller) {
 	
 		while (s.sessionActive)
 			s.listenNext ();
-
-		cout << "closing connection";
-		s.eapolLogoff ();
+		controller->setButtonLocked (1, true);
 		
 		
 		//place to unlock connect button 
 
-		cout << "done!" << endl;
 	}
 }
-
-
 
 
 int main () {
@@ -66,6 +57,5 @@ int main () {
 	app.run ();
 
 	thr.join ();
-
 	return 0;
 }

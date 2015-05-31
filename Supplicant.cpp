@@ -6,12 +6,10 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 {
 	controller = ctr;
 	connectPack = csp;
-	int inum;
 	int i = 0;
 	char errbuf[PCAP_ERRBUF_SIZE];
 
-	cout << "List of interfaces:" << endl;
-
+	
 	if (pcap_findalldevs_ex(PCAP_SRC_IF_STRING, NULL, &alldevs, errbuf) == -1)
 	{
 		fprintf(stderr, "Error in pcap_findalldevs: %s\n", errbuf);
@@ -23,11 +21,7 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 	for (d = alldevs; d; d = d->next)
 	{
 		controller->addOption (d->description);
-		printf("%d. %s", ++i, d->name);
-		if (d->description)
-			printf(" (%s)\n", d->description);
-		else
-			printf(" (No description available)\n");
+		++i;
 	}
 
 	if (i == 0)
@@ -35,8 +29,6 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 		printf("\nNo interfaces found! Make sure WinPcap is installed.\n");
 		return;
 	}
-
-	printf("Enter the interface number (1-%d):", i);
 
 	for (int i = 0; i < 6; ++i)
 		sourceMac[i] = (u_char)supadd[i];
@@ -114,9 +106,8 @@ int Supplicant::eapolStart()
 		return 1;
 	}
 	log += "Packet sent: EAPOL-Packet, Start\n";
-	cout << "LOG: " << log ;
 	logger << log;
-
+	controller->sendMessagge ("Sent packet EAPOL-Start");
 	return 0;
 }
 
@@ -128,7 +119,6 @@ int Supplicant::eapolLogoff()
 	log += " ";
 	log += getSourceMac();
 	log += " ";
-	cout << "Sending packet:" << endl;
 
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
@@ -148,9 +138,9 @@ int Supplicant::eapolLogoff()
 	}
 
 	log += "Packet sent: EAPOL-Packet, Logoff\n";
-	cout << "LOG: " << log << endl;
 	logger << log;
 
+	controller->sendMessagge ("Sent packet  EAPOL-Logoff");
 	return 0;
 }
 
@@ -163,8 +153,7 @@ int Supplicant::eapResponseIdentify()
 	log += " ";
 	log += getDestinationMac();
 	log += " ";
-	cout << "Sending packet:" << endl;
-
+	
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
 	EAP_HEADER* eap;
@@ -197,9 +186,9 @@ int Supplicant::eapResponseIdentify()
 	}
 
 	log += "Packet sent: EAP-Packet, Response/Identify\n";
-	cout << "LOG: " << log ;
 	logger << log;
 
+	controller->sendMessagge ("Sent packet EAP Response-Identify");
 	return 0;
 }
 
@@ -211,7 +200,6 @@ int Supplicant::eapResponseChallenge()
 	log += " "; 
 	log += getDestinationMac();
 	log += " ";
-	cout << "Sending packet:" << endl;
 
 	string res = (char)lastIdentifier + password + challenge;
 
@@ -262,9 +250,9 @@ int Supplicant::eapResponseChallenge()
 	}
 
 	log += "Packet sent: EAP-Packet, Response/MD5-Challenge\n";
-	cout << "LOG: " << log;
 	logger << log;
 
+	controller->sendMessagge ("Sent packet EAP Response-MD5-Challenge");
 	return 0;
 }
 
@@ -273,7 +261,6 @@ int Supplicant::listen()
 	char packet_filter[] = "ether proto 0x888E";	// filtr dopuszczajacy tylko eapol
 	struct bpf_program fcode;
 
-	cout << "!!";
 
 	u_int netmask;
 	if (d->addresses != NULL)
@@ -293,14 +280,14 @@ int Supplicant::listen()
 		return -1;
 	}
 
-	printf("\nlistening on %s...\n", d->description);
-	
+	std::string str = "Listening on ";
+	str += d->description;
+	controller->sendMessagge (str);	
 	return 0;
 }
 
 void Supplicant::listenNext()
 {
-	cout << "Listening for response..." << endl<< endl;
 	bool breaker = true;
 	char packet_filter[] = "ether proto 0x888E";	
 	struct bpf_program fcode;
@@ -332,6 +319,7 @@ void Supplicant::listenNext()
 			breaker = 0;
 			sessionActive = 0;
 			controller->setButtonLocked (1, true);
+			controller->sendMessagge ("Connecting aborted");
 			break;
 		}
 		int res;
@@ -349,7 +337,6 @@ void Supplicant::listenNext()
 		log += " ";
 
 		int len = header->len;
-		cout << "Packet Received: (nr:" << packetCounter << "), length:" << len ;
 		log += "Packet Received:"; 
 
 		for (int i = 0; i < len; ++i)
@@ -386,6 +373,7 @@ void Supplicant::listenNext()
 							cout << "LOG: " << log ;
 							logger << log;
 
+							controller->sendMessagge ("Received packet EAP Request-Identify");
 							eapResponseIdentify();
 							breaker = 0;
 						}
@@ -403,9 +391,9 @@ void Supplicant::listenNext()
 							}
 							setChallenge(receivedChallenge);
 
-							cout << "LOG: " << log ;
 							logger << log;
 
+							controller->sendMessagge ("Received packet EAP Request-MD5-Challenge");
 							eapResponseChallenge(); 
 							breaker = 0;
 						}
@@ -418,35 +406,32 @@ void Supplicant::listenNext()
 
 					case 0x03:
 						log += "\n";
-						cout << "LOG: " << log;
 						logger << log;
 
 
-						cout << "Success: Client authentication accepted. Access to network granted. " << endl;
+						controller->sendMessagge ("Received packet EAP Success");
 						log += " success";
-						cout << ".\n.\n." << endl;
 						sessionActive = 0;
 						breaker = 0;
 						controller->setConnection (true);
 						lockCase ();
 						controller->setButtonLocked (1, true);
+						eapolLogoff ();
 					break;
 
 					case 0x04:
 						log += " fail";
 						log += "\n";
-						cout << "LOG: " << log;
 						logger << log;
-						cout << "!!" << endl;
-						cout << "Fail: Client authentication FAILED: Received negative response from RADIUS. " << endl;
-				
+						controller->sendMessagge ("Received packet EAP Fail");
 						breaker = 0;
 						sessionActive = 0;
 					break;
 				
 					default:
-						cout << "code: def" << endl;
+						controller->sendMessagge ("Received unknown EAP code");
 						log += " uknown EAP code";
+						logger << log;
 				}
 			break;
 		

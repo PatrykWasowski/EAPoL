@@ -92,7 +92,7 @@ void Console::draw () {
 void Console::reactOnButton (const Gui::GuiEvent& event) {
 	if (event == Gui::GuiEvent::SCROLL_DOWN) {
 		mutex.lock ();
-		if ((firstToDisplay == 0) || (messageCounter <= displayText.size ())) {
+		if ((firstToDisplay == 0) || (messageCounter <= (int)displayText.size ())) {
 			mutex.unlock ();
 			return;
 
@@ -104,7 +104,7 @@ void Console::reactOnButton (const Gui::GuiEvent& event) {
 	}
 	else {
 		mutex.lock ();
-		if (firstToDisplay == (messageCounter - displayText.size()) || messageCounter <= displayText.size ()) {
+		if (firstToDisplay == (messageCounter - (int)displayText.size()) || messageCounter <= (int)displayText.size ()) {
 			mutex.unlock ();
 			return;
 
