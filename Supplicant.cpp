@@ -4,6 +4,7 @@ using namespace std;
 
 void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 {
+	
 	controller = ctr;
 	connectPack = csp;
 	int i = 0;
@@ -36,6 +37,29 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 	sessionActive = 1;
 	packetCounter = 0;
 	lastIdentifier = (u_char)0x40;
+	
+	sourceMac [0] = 0xe8;
+	sourceMac [1] = 0x9a;
+	sourceMac [2] = 0x8f;
+	sourceMac [3] = 0x88;
+	sourceMac [4] = 0x4f;
+	sourceMac [5] = 0x36;
+
+	destinationMac [0] = 0x01;
+	destinationMac [1] = 0x80;
+	destinationMac [2] = 0xc2;
+	destinationMac [3] = 0x00;
+	destinationMac [4] = 0x00;
+	destinationMac [5] = 0x03;
+
+	/*sourceMac [0] = 0x01;
+	sourceMac [1] = 0x80;
+	sourceMac [2] = 0xc2;
+	sourceMac [3] = 0x00;
+	sourceMac [4] = 0x00;
+	sourceMac [5] = 0x03;*/
+
+
 }
 
 void Supplicant::chooseDevice (const int& inum) {
@@ -367,10 +391,19 @@ void Supplicant::listenNext()
 						{
 							log += "Identify\n";
 							data = (char*)(temp + 6);
-							for (int i = 0; i < 6; ++i)
+							/*for (int i = 0; i < 6; ++i)
 								destinationMac[i] = (u_char)*(data + i);
-						
+						*/
+							/*destinationMac [0] = 0x01;
+							destinationMac [1] = 0x80;
+							destinationMac [2] = 0xc2;
+							destinationMac [3] = 0x00;
+							destinationMac [4] = 0x00;
+							destinationMac [5] = 0x03;*/
+
+							/*
 							cout << "LOG: " << log ;
+							*/
 							logger << log;
 
 							controller->sendMessagge ("Received packet EAP Request-Identify");

@@ -67,7 +67,7 @@
       <Filter>gui\source</Filter>
     </ClCompile>
     <ClCompile Include="app\GUI\Option.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>gui\source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,11 +119,11 @@
     <ClInclude Include="app\GUI\ChoicePanel.h">
       <Filter>gui\headers</Filter>
     </ClInclude>
-    <ClInclude Include="app\GUI\Option.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="CriticalSectionPack.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="app\GUI\Option.h">
+      <Filter>gui\headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
