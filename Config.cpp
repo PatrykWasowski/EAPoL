@@ -57,7 +57,7 @@ int Config::parse_config(string path){
 	cout << "\tconnection_mode: " << connection_mode<<endl;
 	cout << "\tserver_mac: ";
 	for (int i = 0; i < 6; i++){
-		printf("%X", server_mac[i]);
+		printf("%.2X", server_mac[i]);
 		if (i < 5) printf(":");
 	}
 	cout << "\n\tsupplicant_mac: ";
