@@ -390,20 +390,10 @@ void Supplicant::listenNext()
 						if (*data == (char)0x1)
 						{
 							log += "Identify\n";
-							data = (char*)(temp + 6);
-							/*for (int i = 0; i < 6; ++i)
+							data = (char*)temp;
+							for (int i = 0; i < 6; ++i)
 								destinationMac[i] = (u_char)*(data + i);
-						*/
-							/*destinationMac [0] = 0x01;
-							destinationMac [1] = 0x80;
-							destinationMac [2] = 0xc2;
-							destinationMac [3] = 0x00;
-							destinationMac [4] = 0x00;
-							destinationMac [5] = 0x03;*/
-
-							/*
-							cout << "LOG: " << log ;
-							*/
+						
 							logger << log;
 
 							controller->sendMessagge ("Received packet EAP Request-Identify");
