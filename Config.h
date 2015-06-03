@@ -5,6 +5,7 @@
 #include <iostream>
 #include <vector>
 #include "pcap.h"
+#include <cstdlib>
 
 using namespace std;
 class Config
