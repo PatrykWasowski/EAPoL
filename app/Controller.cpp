@@ -103,8 +103,12 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 
 	switch (event) {
 		case Gui::CONNECT:
-			connect ();
-			connecting = true;
+			if (choicePanel.getOption () == 0)
+				console.addMessage ("You have to choose interface!");
+			else {
+				connect ();
+				connecting = true;
+			}			
 			break;
 		case Gui::DISCONNECT:
 			if (c)
@@ -211,4 +215,18 @@ void Controller::setConnecting (bool con) {
 	mtx.lock ();
 	connecting = con;
 	mtx.unlock ();
+}
+
+void Controller::selectLastPort () {
+	if (!choicePanel.selectLastActive ())
+		console.addMessage ("You have to choose interface");
+}
+
+void Controller::setLastPort (const int& lastPort) {
+	choicePanel.setLastActive (lastPort);
+}
+
+int Controller::getLastPort () {
+	return choicePanel.getLastActive ();
+
 }

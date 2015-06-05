@@ -27,7 +27,10 @@ public:
 	void draw ();
 	void clear ();
 
+	bool selectLastActive ();
 
+	void setLastActive (const int& lastAct);
+	int getLastActive ();
 private:
 	// basic stuff
 	sf::RenderWindow* window;
@@ -44,9 +47,13 @@ private:
 
 	int firstToDisplay;
 	int opts;
-		
+	
 	std::mutex mutex;
 	void assignMessagesToDisplay ();
+
+	int lastActive = -1;
+
+
 };
 #endif
 

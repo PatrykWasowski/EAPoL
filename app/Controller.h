@@ -31,8 +31,9 @@ public:
 	bool getConnection ();
 	bool getConnecting ();
 	void clearOptions ();
-
-
+	void selectLastPort ();
+	void setLastPort (const int& lastPort);
+	int getLastPort ();
 	void setConnection (bool);
 	void setConnecting (bool);
 

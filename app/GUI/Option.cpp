@@ -70,6 +70,10 @@ void Option::resetActive () {
 	active = false;
 }
 
+void Option::setActive () {
+	active = true;
+}
+
 std::string Option::parseText (std::string temp) {
 	if (temp.size () > 16)
 	return temp.substr (16, temp.length ());
