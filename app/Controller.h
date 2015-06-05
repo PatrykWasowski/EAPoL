@@ -37,7 +37,8 @@ public:
 	void setConnection (bool);
 	void setConnecting (bool);
 
-
+	void setMacAddress (const std::string& mac);
+	void addCharToMac (const char& c);
 private:
 	sf::RenderWindow* window;
 	ButtonManager btnManager;

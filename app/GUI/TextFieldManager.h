@@ -28,6 +28,8 @@ public:
 	*/
 	std::vector<std::string> getData ();
 
+	void setMacAddress (std::string& mac);
+	void addCharToMac (char& c);
 
 private:
 	std::list <TextField*> fieldsList;

@@ -230,3 +230,13 @@ int Controller::getLastPort () {
 	return choicePanel.getLastActive ();
 
 }
+
+void Controller::setMacAddress (const std::string& mac) {
+	std::string copy = mac;
+	txtFldManager.setMacAddress (copy);
+}
+
+void Controller::addCharToMac (const char& c) {
+	char copy = c;
+	txtFldManager.addCharToMac(copy);
+}
