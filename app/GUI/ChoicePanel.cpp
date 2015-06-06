@@ -163,10 +163,10 @@ bool ChoicePanel::selectLastActive () {
 	return false;
 }
 
-void ChoicePanel::setLastActive (const int& lastAct) {
+void ChoicePanel::setLastActive (const unsigned int& lastAct) {
 	lastActive = lastAct;
 }
 
-int ChoicePanel::getLastActive () {
+unsigned int ChoicePanel::getLastActive () {
 	return lastActive;
 }

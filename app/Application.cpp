@@ -13,7 +13,7 @@ void Application::initialize () {
 	//window initialization
 
 	sf::ContextSettings settings;
-	window.create (sf::VideoMode (800, 400), "EAPoL Client", sf::Style::Close|sf::Style::Titlebar, settings);
+	window.create (sf::VideoMode (800, 400), "EAPoL Suplicant - Projekt TIN 15L", sf::Style::Close|sf::Style::Titlebar, settings);
 	window.setVerticalSyncEnabled (true);
 	window.setPosition (sf::Vector2i (0, 0));
 	window.setKeyRepeatEnabled (false);

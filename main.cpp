@@ -14,7 +14,7 @@ CriticalSectionPack disconnectPack;
 void funkcjathreada (Controller* controller) {
 	Config c;
 	c.parse_config ("CONFIG.txt");
-
+	controller->setLastPort (c.interface_number);
 	pcap_if_t *alldevs;
 
 	char errbuf [PCAP_ERRBUF_SIZE];
@@ -31,7 +31,7 @@ void funkcjathreada (Controller* controller) {
 		std::unique_lock<std::mutex> lck (connectPack.mtx);
 		while (!connectPack.ready) connectPack.cv.wait (lck);
 		if (!controller->running ())
-			return;
+			break;
 		controller->setButtonLocked (1, false);
 		controller->setButtonLocked (0, true);
 		connectPack.ready = false;
@@ -40,11 +40,11 @@ void funkcjathreada (Controller* controller) {
 		while (s.sessionActive)
 			s.listenNext ();
 		controller->setButtonLocked (1, true);
-		
-		
+	
 		//place to unlock connect button 
-
 	}
+	c.interface_number = controller->getLastPort ();
+	c.save_config ("CONFIG.TXT");
 }
 
 

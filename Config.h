@@ -14,7 +14,7 @@ public:
 	int parse_config(string path);
 	void save_config(string path);
 
-	int interface_number;
+	unsigned int interface_number;
 	u_char supplicant_mac[6];
 	u_char server_mac[6];
 

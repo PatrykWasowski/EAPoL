@@ -1,7 +1,7 @@
 #include "Config.h"
 
 Config::Config(){
-	interface_number = -1;
+	interface_number = 1;
 	for (int i = 0; i < 6; i++){
 		supplicant_mac[i] = 'A';
 		server_mac[i] = 'A';

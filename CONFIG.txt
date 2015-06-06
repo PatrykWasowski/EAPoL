@@ -1,4 +1,5 @@
-connection_mode = 1
-server_mac = 32:32:32:32:32:32
-#to jest komentarz
+#Plik z ostanimi ustawieniami aplikacji. Generowany automatycznie - nie nalezy do niego nic dopisywac, jedynie edytowac.
+#Przy edycji nalezy zachowac jego format, tj. spacje, dwukropki. 
+interface_number = 1
+server_mac = 2:3:4:5:6:7
 supplicant_mac = 1:1:1:1:1:1

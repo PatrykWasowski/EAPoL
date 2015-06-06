@@ -29,8 +29,8 @@ public:
 
 	bool selectLastActive ();
 
-	void setLastActive (const int& lastAct);
-	int getLastActive ();
+	void setLastActive (const unsigned int& lastAct);
+	unsigned int getLastActive ();
 private:
 	// basic stuff
 	sf::RenderWindow* window;
@@ -51,7 +51,7 @@ private:
 	std::mutex mutex;
 	void assignMessagesToDisplay ();
 
-	int lastActive = -1;
+	unsigned int lastActive = UINT_MAX;
 
 
 };

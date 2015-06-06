@@ -222,11 +222,11 @@ void Controller::selectLastPort () {
 		console.addMessage ("You have to choose interface");
 }
 
-void Controller::setLastPort (const int& lastPort) {
+void Controller::setLastPort (const unsigned int& lastPort) {
 	choicePanel.setLastActive (lastPort);
 }
 
-int Controller::getLastPort () {
+unsigned int Controller::getLastPort () {
 	return choicePanel.getLastActive ();
 
 }
