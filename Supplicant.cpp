@@ -37,37 +37,19 @@ void Supplicant::init(u_char* supadd, u_char* servadd, Controller* ctr, Critical
 	sessionActive = 1;
 	packetCounter = 0;
 	lastIdentifier = (u_char)0x40;
+
+	for (int i = 0; i < 6; ++i)
+		destinationMac [i] = (u_char) servadd [i];
+	
 	/*
-	sourceMac [0] = 0xe8;
-	sourceMac [1] = 0x9a;
-	sourceMac [2] = 0x8f;
-	sourceMac [3] = 0x88;
-	sourceMac [4] = 0x4f;
-	sourceMac [5] = 0x36;
-*/
-	
-	//for (int i = 0; i < 6; ++i)
-	//	destinationMac [i] = (u_char) servadd [i];
-	
-	
 	destinationMac [0] = 0x01;
 	destinationMac [1] = 0x80;
 	destinationMac [2] = 0xc2;
 	destinationMac [3] = 0x00;
 	destinationMac [4] = 0x00;
 	destinationMac [5] = 0x03;
-
+*/
 	destinationMacOnGUI ();
-
-	
-	/*sourceMac [0] = 0x01;
-	sourceMac [1] = 0x80;
-	sourceMac [2] = 0xc2;
-	sourceMac [3] = 0x00;
-	sourceMac [4] = 0x00;
-	sourceMac [5] = 0x03;*/
-
-
 }
 
 void Supplicant::chooseDevice (const int& inum) {

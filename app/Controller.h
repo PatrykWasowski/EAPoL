@@ -40,6 +40,8 @@ public:
 	void setMacAddress (const std::string& mac);
 	void addCharToMac (const char& c);
 private:
+	sf::Text credits;
+	sf::Font font;
 	sf::RenderWindow* window;
 	ButtonManager btnManager;
 	TextFieldManager txtFldManager;
