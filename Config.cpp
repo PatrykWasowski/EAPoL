@@ -41,9 +41,7 @@ int Config::parse_config(string path){
 				for (int i = 0; i < 6; i++){
 					int frag;
 					istringstream iss(mac_tokens[i]);
-					istringstream iss(mac_tokens[i]);
 					iss >> std::hex >> frag;
-					iss >> server_mac[i];
 					server_mac[i] = frag;
 				}
 			}
@@ -53,7 +51,6 @@ int Config::parse_config(string path){
 				for (int i = 0; i < 6; i++){
 					istringstream iss(mac_tokens[i]);
 					int frag;
-					iss >> supplicant_mac[i];
 					iss >> std::hex >> frag;
 					supplicant_mac[i] = frag;
 				}
@@ -77,7 +74,7 @@ int Config::parse_config(string path){
 		printf("%.2X", supplicant_mac[i]);
 		if (i < 5) printf(":");
 	}
-	cout << endl<<endl;
+	cout << endl << endl;
 	return 0;
 }
 void Config::save_config(string path){
@@ -88,7 +85,7 @@ void Config::save_config(string path){
 	f << "interface_number = " << interface_number << endl;
 	f << "server_mac = ";
 	for (int i = 0; i < 6; i++){
-		f <<hex<< server_mac[i];
+		f << std::hex << server_mac[i];
 		if (i < 5) 
 			f << ":";
 		else 
@@ -97,7 +94,7 @@ void Config::save_config(string path){
 	
 	f << "supplicant_mac = ";
 	for (int i = 0; i < 6; i++){
-		f <<hex<< supplicant_mac[i];
+		f << std::hex << supplicant_mac[i];
 		if (i < 5) 
 			f << ":";
 		else  
