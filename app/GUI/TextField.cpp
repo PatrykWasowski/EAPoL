@@ -78,25 +78,25 @@ Gui::GuiEvent TextField::checkActivation (const sf::Vector2f& click) {
 }
 
 void TextField::addCharToText (char& c){
+	if (type == TextType::MACADDR) {
+		if (str.length () < 12) {
+
+			if (c >= 65 && c <= 70)
+				c += 32;
+
+			if ((c >= 48 && c <= 57) || (c >= 97 && c <= 102)) {
+				str += c;
+				if ((str.length () % 2) == 0 && str.length () != 12) {
+					text.setString (text.getString () + c + ":");
+				}
+				else
+					text.setString (text.getString () + c);
+			}
+		}
+	}
+	else
 	if (isActive) {
 		switch (type) {
-			case TextType::MACADDR:
-				if (str.length () < 12) {
-
-					if (c >= 65 && c <= 70)
-						c += 32;
-					
-					if ((c >= 48 && c <= 57) || (c >= 97 && c <= 102)) 
-					{
-						str += c;
-						if ((str.length () % 2) == 0 && str.length() != 12) {
-							text.setString (text.getString()+ c + ":");
-						}
-						else 
-							text.setString (text.getString () + c);
-					}
-				}
-				break;
 			case TextType::LOGIN:
 				str += c;
 				if (str.length () <= 16)

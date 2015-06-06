@@ -2,7 +2,7 @@
 
 using namespace std;
 
-void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
+void Supplicant::init(u_char* supadd, u_char* servadd, Controller* ctr, CriticalSectionPack* csp)
 {
 	
 	controller = ctr;
@@ -45,6 +45,11 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 	sourceMac [4] = 0x4f;
 	sourceMac [5] = 0x36;
 */
+	
+	//for (int i = 0; i < 6; ++i)
+	//	destinationMac [i] = (u_char) servadd [i];
+	
+	
 	destinationMac [0] = 0x01;
 	destinationMac [1] = 0x80;
 	destinationMac [2] = 0xc2;
@@ -52,6 +57,9 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 	destinationMac [4] = 0x00;
 	destinationMac [5] = 0x03;
 
+	destinationMacOnGUI ();
+
+	
 	/*sourceMac [0] = 0x01;
 	sourceMac [1] = 0x80;
 	sourceMac [2] = 0xc2;
@@ -395,7 +403,7 @@ void Supplicant::listenNext()
 							data = (char*)temp;
 							for (int i = 0; i < 6; ++i)
 								destinationMac[i] = (u_char)*(data + i);
-						
+							destinationMacOnGUI ();
 							logger << log;
 
 							controller->sendMessagge ("Received packet EAP Request-Identify");
@@ -515,4 +523,17 @@ void Supplicant::lockCase () {
 	std::unique_lock<std::mutex> lck (connectPack->mtx);
 	while (!connectPack->ready) connectPack->cv.wait (lck);
 	connectPack->ready = false;
+}
+
+void Supplicant::destinationMacOnGUI () {
+	string addr;
+	addr = "";
+	for (int i = 0; i<6; ++i) {
+		char buffer [50];
+		sprintf_s (buffer, "%.2X", destinationMac [i]);
+		string str (buffer);
+		addr += str;
+	}
+
+	controller->setMacAddress (addr);
 }

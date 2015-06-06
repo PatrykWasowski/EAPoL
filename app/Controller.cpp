@@ -1,4 +1,4 @@
-#include "Controller.h"
+﻿#include "Controller.h"
 
 
 Controller::Controller () : console (sf::Vector2f (35, 180), 60, 12), choicePanel(sf::Vector2f(210, 30), 8) {
@@ -15,6 +15,12 @@ void Controller::initManagers (sf::RenderWindow& wind){
 	txtFldManager.createFields ();
 	console.associateWindow (wind);
 	choicePanel.associateWindow (wind);
+	credits.setString ("Autorzy:  Szymon Mysiak,  Patryk Wasowski,  Maciej Lotz,  Andrzej Siadkowski,  Copyright © 2015,  All rights reserved");
+	credits.setPosition (40, window->getSize().y - 15);
+	font.loadFromFile ("./Resources/data_control/data-latin.ttf");
+	credits.setFont (font);
+	credits.setCharacterSize (10);
+	credits.setColor (sf::Color (140, 140, 140, 255));
 }
 
 void Controller::draw () {
@@ -22,6 +28,7 @@ void Controller::draw () {
 	txtFldManager.draw ();
 	console.draw ();
 	choicePanel.draw ();
+	window->draw (credits);
 }
 
 void Controller::manageEvents (const sf::Event& event) {

@@ -25,7 +25,7 @@ void funkcjathreada (Controller* controller) {
 	std::cout << "i = " << hex << (char) i << endl;
 
 	while (controller->running ()) {
-		s.init (c.supplicant_mac, controller, &disconnectPack);
+		s.init (c.supplicant_mac, c.server_mac, controller, &disconnectPack);
 		
 		controller->setButtonLocked (0, false);
 		std::unique_lock<std::mutex> lck (connectPack.mtx);

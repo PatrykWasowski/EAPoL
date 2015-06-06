@@ -31,12 +31,13 @@ private:
 	CriticalSectionPack* connectPack;
 	void chooseDevice (const int& inum);
 	void lockCase ();
+	void destinationMacOnGUI ();
 public:
 	bool sessionActive;
 	Supplicant():logger(Logger::getInstance()){}
 	~Supplicant(){}
 	
-	void init(u_char*, Controller*, CriticalSectionPack*);
+	void init (u_char*, u_char*, Controller*, CriticalSectionPack*);
 	int eapolStart();
 	int eapolLogoff();
 	int eapResponseIdentify();
