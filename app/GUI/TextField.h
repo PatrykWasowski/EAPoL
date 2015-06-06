@@ -33,6 +33,11 @@ public:
 	void addCharToText (char& c);
 	void eraseChar ();
 	std::string getText ();
+	
+	
+	void addMacChar (char& c);
+	void setMac (const std::string& mac);
+	void resetMac ();
 private:
 	sf::RectangleShape field;
 	sf::Text text;

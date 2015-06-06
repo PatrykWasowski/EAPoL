@@ -25,7 +25,6 @@ public:
 
 	void clear ();
 
-
 private:
 	// basic stuff
 	sf::RenderWindow* window;
@@ -47,6 +46,7 @@ private:
 	std::mutex mutex;
 
 	void assignMessagesToDisplay ();
+
 };
 #endif
 

@@ -19,6 +19,8 @@ public:
 	void setText (const std::string& text);
 
 	void resetActive ();
+
+	void setActive ();
 	
 
 private:

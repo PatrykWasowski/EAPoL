@@ -24,7 +24,7 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 		controller->addOption (d->description);
 		++i;
 	}
-
+	controller->selectLastPort ();
 	if (i == 0)
 	{
 		printf("\nNo interfaces found! Make sure WinPcap is installed.\n");

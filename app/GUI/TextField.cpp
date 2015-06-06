@@ -70,6 +70,8 @@ bool TextField::getIsActive () {
 
 Gui::GuiEvent TextField::checkActivation (const sf::Vector2f& click) {
 	
+	if (type == TextType::MACADDR)
+		return Gui::GuiEvent::MISSED;
 	if (field.getGlobalBounds ().contains (click))
 		return Gui::GuiEvent::ACTIVATED;
 	return Gui::GuiEvent::MISSED;
@@ -148,3 +150,30 @@ std::string TextField::getText () {
 	return str;
 }
 
+
+void TextField::addMacChar (char& c) {
+	if (type == TextType::type::MACADDR) {
+		addCharToText (c);
+	}
+}
+
+void TextField::setMac (const std::string& mac) {
+	if (type != TextType::type::MACADDR || mac.length() != 12) {
+		return;
+	}
+
+	for (char c : mac) {
+		if (c < 48 || (c>57 && c < 65) || (c>70 && c < 97) || c>102)
+			return;
+	}
+
+	for (char c : mac)
+		addCharToText (c);
+}
+
+void TextField::resetMac () {
+	if (type == TextType::type::MACADDR) {
+		for (int i = 0; i < str.length (); ++i)
+			eraseChar ();
+	}
+}

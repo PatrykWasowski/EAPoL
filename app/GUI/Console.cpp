@@ -127,4 +127,3 @@ void Console::assignMessagesToDisplay () {
 		displayText [i]->setString (*(messages[counter++]));
 	mutex.unlock ();
 }
-

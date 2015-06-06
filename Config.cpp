@@ -1,5 +1,14 @@
 #include "Config.h"
 
+Config::Config(){
+	interface_number = -1;
+	for (int i = 0; i < 6; i++){
+		supplicant_mac[i] = 'A';
+		server_mac[i] = 'A';
+	}
+}
+
+
 int Config::parse_config(string path){
 	ifstream config_file(path);
 
@@ -22,18 +31,16 @@ int Config::parse_config(string path){
 			}
 		
 
-			if (tokens[0] == "connection_mode"){
+			if (tokens[0] == "interface_number"){
 				istringstream iss(tokens[2]);
-				iss >> connection_mode;
+				iss >> interface_number;
 			}
 			else if(tokens[0] == "server_mac"){
 				vector<string> mac_tokens;
 				split(tokens[2], ':', mac_tokens);
 				for (int i = 0; i < 6; i++){
-					int frag;
 					istringstream iss(mac_tokens[i]);
-					iss >> std::hex >> frag;
-					server_mac[i] = frag;
+					iss >> server_mac[i];
 				}
 			}
 			else if (tokens[0] == "supplicant_mac"){
@@ -41,9 +48,7 @@ int Config::parse_config(string path){
 				split(tokens[2], ':', mac_tokens);
 				for (int i = 0; i < 6; i++){
 					istringstream iss(mac_tokens[i]);
-					int frag;
-					iss >> std::hex >> frag;
-					supplicant_mac[i] = frag;
+					iss >>supplicant_mac[i];
 				}
 			}
 			else{
@@ -54,10 +59,10 @@ int Config::parse_config(string path){
 	}
 
 	cout << "Loading config file - Done!\n";
-	cout << "\tconnection_mode: " << connection_mode<<endl;
+	cout << "\tinterface_number: " << interface_number<<endl;
 	cout << "\tserver_mac: ";
 	for (int i = 0; i < 6; i++){
-		printf("%.2X", server_mac[i]);
+		printf("%c", server_mac[i]);
 		if (i < 5) printf(":");
 	}
 	cout << "\n\tsupplicant_mac: ";
@@ -65,9 +70,33 @@ int Config::parse_config(string path){
 		printf("%.2X", supplicant_mac[i]);
 		if (i < 5) printf(":");
 	}
-	cout << endl << endl;
-
+	cout << endl<<endl;
 	return 0;
+}
+void Config::save_config(string path){
+	ofstream f;
+	f.open(path, ios::out | ios::trunc);
+	f << "#Plik z ostanimi ustawieniami aplikacji. Generowany automatycznie - nie nalezy do niego nic dopisywac, jedynie edytowac." << endl;
+	f << "#Przy edycji nalezy zachowac jego format, tj. spacje, dwukropki. " << endl;
+	f << "interface_number = " << interface_number << endl;
+	f << "server_mac = ";
+	for (int i = 0; i < 6; i++){
+		f <<hex<< server_mac[i];
+		if (i < 5) 
+			f << ":";
+		else 
+			f << endl;
+	}
+	
+	f << "supplicant_mac = ";
+	for (int i = 0; i < 6; i++){
+		f <<hex<< supplicant_mac[i];
+		if (i < 5) 
+			f << ":";
+		else  
+			f << endl;
+	}	
+	cout << "Saving config file - Done!\n";
 }
 
 vector<string>& Config::split(const string &s, char delim, vector<string> &elems) {

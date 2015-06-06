@@ -92,3 +92,18 @@ std::vector<std::string> TextFieldManager::getData () {
 		data.push_back (i->getText ());
 	return data;
 }
+
+
+
+void TextFieldManager::setMacAddress (std::string& mac) {
+	for (auto &i : fieldsList) {
+		i->resetMac ();
+		i->setMac (mac);
+	}
+}
+
+void TextFieldManager::addCharToMac (char& c) {
+	for (auto &i : fieldsList) {
+		i->addMacChar(c);
+	}
+}

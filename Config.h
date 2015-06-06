@@ -5,15 +5,16 @@
 #include <iostream>
 #include <vector>
 #include "pcap.h"
-#include <cstdlib>
 
 using namespace std;
 class Config
 {
 public:
+	Config();
 	int parse_config(string path);
+	void save_config(string path);
 
-	unsigned int connection_mode;
+	int interface_number;
 	u_char supplicant_mac[6];
 	u_char server_mac[6];
 
