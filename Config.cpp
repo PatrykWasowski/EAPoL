@@ -39,8 +39,12 @@ int Config::parse_config(string path){
 				vector<string> mac_tokens;
 				split(tokens[2], ':', mac_tokens);
 				for (int i = 0; i < 6; i++){
+					int frag;
 					istringstream iss(mac_tokens[i]);
+					istringstream iss(mac_tokens[i]);
+					iss >> std::hex >> frag;
 					iss >> server_mac[i];
+					server_mac[i] = frag;
 				}
 			}
 			else if (tokens[0] == "supplicant_mac"){
@@ -48,7 +52,10 @@ int Config::parse_config(string path){
 				split(tokens[2], ':', mac_tokens);
 				for (int i = 0; i < 6; i++){
 					istringstream iss(mac_tokens[i]);
-					iss >>supplicant_mac[i];
+					int frag;
+					iss >> supplicant_mac[i];
+					iss >> std::hex >> frag;
+					supplicant_mac[i] = frag;
 				}
 			}
 			else{
@@ -62,7 +69,7 @@ int Config::parse_config(string path){
 	cout << "\tinterface_number: " << interface_number<<endl;
 	cout << "\tserver_mac: ";
 	for (int i = 0; i < 6; i++){
-		printf("%c", server_mac[i]);
+		printf("%.2X", server_mac[i]);
 		if (i < 5) printf(":");
 	}
 	cout << "\n\tsupplicant_mac: ";
