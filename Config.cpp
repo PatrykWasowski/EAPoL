@@ -3,8 +3,8 @@
 Config::Config(){
 	interface_number = 1;
 	for (int i = 0; i < 6; i++){
-		supplicant_mac[i] = 'A';
-		server_mac[i] = 'A';
+		supplicant_mac[i] = 1;
+		server_mac[i] = 1;
 	}
 }
 
@@ -61,20 +61,6 @@ int Config::parse_config(string path){
 		}
 			
 	}
-
-	cout << "Loading config file - Done!\n";
-	cout << "\tinterface_number: " << interface_number<<endl;
-	cout << "\tserver_mac: ";
-	for (int i = 0; i < 6; i++){
-		printf("%.2X", server_mac[i]);
-		if (i < 5) printf(":");
-	}
-	cout << "\n\tsupplicant_mac: ";
-	for (int i = 0; i < 6; i++){
-		printf("%.2X", supplicant_mac[i]);
-		if (i < 5) printf(":");
-	}
-	cout << endl << endl;
 	return 0;
 }
 void Config::save_config(string path){
@@ -85,7 +71,7 @@ void Config::save_config(string path){
 	f << "interface_number = " << interface_number << endl;
 	f << "server_mac = ";
 	for (int i = 0; i < 6; i++){
-		f << std::hex << server_mac[i];
+		f << std::hex <<(int) server_mac[i];
 		if (i < 5) 
 			f << ":";
 		else 
@@ -94,7 +80,7 @@ void Config::save_config(string path){
 	
 	f << "supplicant_mac = ";
 	for (int i = 0; i < 6; i++){
-		f << std::hex << supplicant_mac[i];
+		f << std::hex << (int)supplicant_mac[i];
 		if (i < 5) 
 			f << ":";
 		else  
