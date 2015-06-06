@@ -41,9 +41,7 @@ int Config::parse_config(string path){
 				for (int i = 0; i < 6; i++){
 					int frag;
 					istringstream iss(mac_tokens[i]);
-					istringstream iss(mac_tokens[i]);
 					iss >> std::hex >> frag;
-					iss >> server_mac[i];
 					server_mac[i] = frag;
 				}
 			}
@@ -53,7 +51,6 @@ int Config::parse_config(string path){
 				for (int i = 0; i < 6; i++){
 					istringstream iss(mac_tokens[i]);
 					int frag;
-					iss >> supplicant_mac[i];
 					iss >> std::hex >> frag;
 					supplicant_mac[i] = frag;
 				}
