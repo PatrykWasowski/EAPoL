@@ -1,4 +1,4 @@
 connection_mode = 1
 server_mac = 32:32:32:32:32:32
 #to jest komentarz
-supplicant_mac = 1:1:1:1:1:1
+supplicant_mac = 2e:8f:13:bb:a1:cd

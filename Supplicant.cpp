@@ -37,14 +37,14 @@ void Supplicant::init(u_char* supadd, Controller* ctr, CriticalSectionPack* csp)
 	sessionActive = 1;
 	packetCounter = 0;
 	lastIdentifier = (u_char)0x40;
-	
+	/*
 	sourceMac [0] = 0xe8;
 	sourceMac [1] = 0x9a;
 	sourceMac [2] = 0x8f;
 	sourceMac [3] = 0x88;
 	sourceMac [4] = 0x4f;
 	sourceMac [5] = 0x36;
-
+*/
 	destinationMac [0] = 0x01;
 	destinationMac [1] = 0x80;
 	destinationMac [2] = 0xc2;
@@ -173,10 +173,11 @@ int Supplicant::eapolLogoff()
 int Supplicant::eapResponseIdentify()
 {
 	string log("");
-	log += getSourceMac();
-	log += " ";
 	log += getDestinationMac();
 	log += " ";
+	log += getSourceMac();
+	log += " ";
+	
 	
 	u_char packet_buffer[100];
 	ETHERNET_HEADER* eth;
@@ -220,10 +221,11 @@ int Supplicant::eapResponseChallenge()
 {
 
 	string log("");
-	log += getSourceMac();
-	log += " "; 
 	log += getDestinationMac();
 	log += " ";
+	log += getSourceMac();
+	log += " "; 
+	
 
 	string res = (char)lastIdentifier + password + challenge;
 
