@@ -126,6 +126,8 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 		case Gui::CLOSE:	
 			runMutex.lock ();
 			r = false;
+			c = false;
+			connecting = false;
 			runMutex.unlock ();
 			//if not connected yet - signal for 2nd thread to wake up
 			connect ();
@@ -148,7 +150,9 @@ Console& Controller::getConsole () {
 }
 
 void Controller::sendMessagge (const std::string& msg) {
+	mtx.lock ();
 	console.addMessage (msg);
+	mtx.unlock ();
 }
 void Controller::setCriticalSection (CriticalSectionPack* pck, CriticalSectionPack* pck2) {
 	connectPack = pck;
@@ -169,11 +173,17 @@ void Controller::disconnect () {
 
 
 bool Controller::running () {
-	return r;
+	mtx.lock ();
+	bool rr = r;
+	mtx.unlock ();
+	return rr;
 }
 
 std::vector<std::string> Controller::getData () {
-	return txtFldManager.getData ();
+	mtx.lock ();
+	std::vector<std::string> str = txtFldManager.getData ();
+	mtx.unlock ();
+	return str;
 }
 
 void Controller::addOption (const std::string& opt) {
@@ -183,7 +193,10 @@ void Controller::addOption (const std::string& opt) {
 }
 
 int Controller::getOption () {
-	return choicePanel.getOption ();
+	mtx.lock ();
+	int i = choicePanel.getOption ();
+	mtx.unlock ();
+	return i;
 }
 
 void Controller::clearOptions () {
@@ -234,16 +247,22 @@ void Controller::setLastPort (const unsigned int& lastPort) {
 }
 
 unsigned int Controller::getLastPort () {
-	return choicePanel.getLastActive ();
-
+	mtx.lock ();
+	unsigned int i = choicePanel.getLastActive ();
+	mtx.unlock ();
+	return i;
 }
 
 void Controller::setMacAddress (const std::string& mac) {
+	mtx.lock ();
 	std::string copy = mac;
 	txtFldManager.setMacAddress (copy);
+	mtx.unlock ();
 }
 
 void Controller::addCharToMac (const char& c) {
+	mtx.lock ();
 	char copy = c;
 	txtFldManager.addCharToMac(copy);
+	mtx.unlock ();
 }
