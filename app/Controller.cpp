@@ -15,7 +15,7 @@ void Controller::initManagers (sf::RenderWindow& wind){
 	txtFldManager.createFields ();
 	console.associateWindow (wind);
 	choicePanel.associateWindow (wind);
-	credits.setString ("Edwin Jarosinski #NBABallot"/*"Autorzy:  Szymon Mysiak,  Patryk Wasowski,  Maciej Lotz,  Andrzej Siadkowski,  Copyright © 2015,  All rights reserved"*/);
+	credits.setString ("Autorzy:  Szymon Mysiak,  Patryk Wasowski,  Maciej Lotz,  Andrzej Siadkowski,  Copyright © 2015,  All rights reserved");
 	credits.setPosition ((float)40.0, window->getSize().y - (float)15.0);
 	font.loadFromFile ("./Resources/data_control/data-latin.ttf");
 	credits.setFont (font);

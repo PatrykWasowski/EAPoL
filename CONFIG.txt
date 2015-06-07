@@ -2,4 +2,4 @@
 #Przy edycji nalezy zachowac jego format, tj. spacje, dwukropki. 
 interface_number = 1
 server_mac = 11:22:33:aa:44:55
-supplicant_mac = 01:04:03:01:31:31
+supplicant_mac = 1:4:3:1:31:31

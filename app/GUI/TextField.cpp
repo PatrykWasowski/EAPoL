@@ -173,7 +173,7 @@ void TextField::setMac (const std::string& mac) {
 
 void TextField::resetMac () {
 	if (type == TextType::type::MACADDR) {
-		for (int i = 0; i < str.length (); ++i)
+		for (int i = 0; i < (int)str.length (); ++i)
 			eraseChar ();
 	}
 }
