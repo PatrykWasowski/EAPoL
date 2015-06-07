@@ -429,7 +429,8 @@ void Supplicant::listenNext()
 						sessionActive = 0;
 						breaker = 0;
 						controller->setConnection (true);
-						lockCase ();
+						if (controller->running ())
+							lockCase ();
 						controller->setButtonLocked (1, true);
 						eapolLogoff ();
 					break;

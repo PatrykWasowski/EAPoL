@@ -124,15 +124,15 @@ void Controller::performAction (const Gui::GuiEvent& event) {
 			connecting = false;
 			break;
 		case Gui::CLOSE:	
-			runMutex.lock ();
 			r = false;
-			c = false;
-			connecting = false;
-			runMutex.unlock ();
-			//if not connected yet - signal for 2nd thread to wake up
-			connect ();
-			//if connected
-			disconnect ();
+			if (c)
+				performAction (Gui::GuiEvent::DISCONNECT);
+			else {
+				if (connecting)
+					performAction (Gui::GuiEvent::DISCONNECT);
+				else
+					performAction (Gui::GuiEvent::CONNECT);
+			}
 			std::cout <<"ok";
 			window->close ();
 			break;
